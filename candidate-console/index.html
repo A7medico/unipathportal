@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CANDIDATE_CONSOLE — Engineering Asset for Oceanic Deployment</title>
+  <meta name="description" content="Interactive developer-console style application profile for university and language school admissions in Australia and New Zealand. AI, Network Security, and Software Engineering capabilities." />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/console.css" />
+
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⟩</text></svg>" />
+</head>
+<body>
+
+  <!-- Particle Background Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- ═══════════ NAVIGATION BAR ═══════════ -->
+  <nav class="console-nav">
+    <a href="#" class="nav-brand">
+      <span class="status-dot"></span>
+      CANDIDATE_CONSOLE <span style="color: var(--text-muted); font-weight: 400;">v2.1.0</span>
+    </a>
+    <div class="nav-links">
+      <a href="#hero" class="active">init()</a>
+      <a href="#linguistics">linguistics</a>
+      <a href="#payload">payload</a>
+      <a href="#handshake">handshake</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <div class="page-container">
+
+    <!-- ═══════════ HERO SECTION — The Endpoint ═══════════ -->
+    <section id="hero" class="hero">
+      <div class="hero-endpoint-tag">
+        <span class="method">POST</span>
+        /api/v1/candidates/initialize
+      </div>
+
+      <h1>
+        <span class="comment">// INITIALIZE_CANDIDATE</span>
+        Deploy <span class="accent">Engineering Asset</span><br>
+        to Oceanic Institutions
+      </h1>
+
+      <!-- Terminal Animation Window -->
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">candidate_handshake.sh — bash</span>
+        </div>
+        <div class="terminal-body" id="terminal-lines">
+          <!-- Lines injected by TerminalEngine.init() -->
+        </div>
+      </div>
+
+      <!-- Status Badges -->
+      <div class="hero-status-bar">
+        <div class="status-badge online">
+          <span class="badge-dot"></span>
+          SYSTEMS ONLINE
+        </div>
+        <div class="status-badge online">
+          <span class="badge-dot"></span>
+          IELTS CLEARANCE: 6.5+
+        </div>
+        <div class="status-badge pending">
+          <span class="badge-dot"></span>
+          AWAITING OCEANIC PATCH
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════ LINGUISTIC STACK — Network Routing ═══════════ -->
+    <section id="linguistics">
+      <div class="section-header">
+        <div class="section-tag">MODULE_02 // LINGUISTIC_STACK</div>
+        <h2 class="section-title">Network <span class="accent">Routing</span> Diagram</h2>
+        <p class="section-subtitle">Language architecture mapped as a distributed network topology. Each node represents a communication protocol layer.</p>
+      </div>
+
+      <!-- Network Nodes -->
+      <div class="network-topology">
+
+        <!-- Node 1: Arabic — Base Root Server -->
+        <div class="net-node primary reveal">
+          <div class="node-icon green">ع</div>
+          <div class="node-type green">BASE ROOT SERVER</div>
+          <div class="node-name">Arabic</div>
+          <div class="node-desc">Native language kernel. Full root-level access to Semitic linguistic architecture. Zero-latency processing.</div>
+          <div class="bandwidth-bar">
+            <div class="bandwidth-label">
+              <span>BANDWIDTH</span>
+              <span>100%</span>
+            </div>
+            <div class="bandwidth-track">
+              <div class="bandwidth-fill green" data-width="100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector -->
+        <div class="node-connector reveal reveal-delay-1">
+          <div class="connector-line"></div>
+          <span>TCP/IP</span>
+        </div>
+
+        <!-- Node 2: English — High-Bandwidth Connection -->
+        <div class="net-node reveal reveal-delay-2">
+          <div class="node-icon blue">EN</div>
+          <div class="node-type blue">HIGH-BANDWIDTH CONNECTION</div>
+          <div class="node-name">English</div>
+          <div class="node-desc">Professional & academic protocol. Full-duplex communication for technical documentation and collaborative development.</div>
+          <div class="bandwidth-bar">
+            <div class="bandwidth-label">
+              <span>BANDWIDTH</span>
+              <span>85%</span>
+            </div>
+            <div class="bandwidth-track">
+              <div class="bandwidth-fill blue" data-width="85%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector -->
+        <div class="node-connector reveal reveal-delay-3">
+          <div class="connector-line"></div>
+          <span>UDP</span>
+        </div>
+
+        <!-- Node 3: Turkish — Secondary Node -->
+        <div class="net-node reveal reveal-delay-4">
+          <div class="node-icon amber">TR</div>
+          <div class="node-type amber">SECONDARY NODE</div>
+          <div class="node-name">Turkish</div>
+          <div class="node-desc">Agglutinative language module. Auxiliary channel for cross-cultural handshake protocols and expanded routing tables.</div>
+          <div class="bandwidth-bar">
+            <div class="bandwidth-label">
+              <span>BANDWIDTH</span>
+              <span>55%</span>
+            </div>
+            <div class="bandwidth-track">
+              <div class="bandwidth-fill amber" data-width="55%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Oceanic Cultural Protocols Card -->
+      <div class="cultural-protocol-card reveal">
+        <div class="protocol-header">
+          <span class="protocol-title">⬡ Oceanic Cultural Protocols</span>
+          <span class="protocol-status">AWAITING PATCH</span>
+        </div>
+        <p class="protocol-desc">
+          Cultural adaptation module for Australia & New Zealand communication standards.
+          This node requires on-site immersion data from a partnering university to compile.
+          <strong style="color: var(--neon-amber);">Update patch pending: your institution provides the runtime.</strong>
+        </p>
+        <div class="protocol-progress-track">
+          <div class="protocol-progress-fill"></div>
+        </div>
+        <div class="protocol-percentage">0% — Awaiting university deployment environment</div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════ TECHNICAL PAYLOAD — Capability Cards ═══════════ -->
+    <section id="payload">
+      <div class="section-header">
+        <div class="section-tag">MODULE_03 // TECHNICAL_PAYLOAD</div>
+        <h2 class="section-title">Engineering <span class="accent">Capabilities</span></h2>
+        <p class="section-subtitle">Core system modules detailing the technical stack and project deployments.</p>
+      </div>
+
+      <div class="payload-grid">
+
+        <!-- Card 1: AI -->
+        <div class="payload-card reveal">
+          <div class="card-header">
+            <div class="card-icon green">🧠</div>
+            <span class="card-version">v3.2</span>
+          </div>
+          <div class="card-title">Artificial Intelligence</div>
+          <div class="card-desc">
+            Deep learning model architecture, neural network design, computer vision pipelines, and NLP systems.
+            Proficient in TensorFlow, PyTorch, and custom transformer architectures.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">TensorFlow</span>
+            <span class="card-tag">PyTorch</span>
+            <span class="card-tag">Computer Vision</span>
+            <span class="card-tag">NLP</span>
+            <span class="card-tag">Transformers</span>
+            <span class="card-tag">MLOps</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Network Security -->
+        <div class="payload-card reveal reveal-delay-1">
+          <div class="card-header">
+            <div class="card-icon red">🛡️</div>
+            <span class="card-version">v2.8</span>
+          </div>
+          <div class="card-title">Network Security</div>
+          <div class="card-desc">
+            Penetration testing, vulnerability assessment, cryptographic protocol implementation,
+            and zero-trust network architecture. SIEM integration and incident response workflows.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">Penetration Testing</span>
+            <span class="card-tag">Cryptography</span>
+            <span class="card-tag">Zero Trust</span>
+            <span class="card-tag">SIEM</span>
+            <span class="card-tag">Wireshark</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Software Development -->
+        <div class="payload-card reveal reveal-delay-2">
+          <div class="card-header">
+            <div class="card-icon purple">⚙️</div>
+            <span class="card-version">v4.0</span>
+          </div>
+          <div class="card-title">Software Development</div>
+          <div class="card-desc">
+            Full-stack engineering across web, mobile, and cloud-native platforms. CI/CD pipelines,
+            microservices architecture, and containerized deployment on AWS / GCP.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">JavaScript</span>
+            <span class="card-tag">Python</span>
+            <span class="card-tag">React</span>
+            <span class="card-tag">Node.js</span>
+            <span class="card-tag">Docker</span>
+            <span class="card-tag">AWS</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Featured — IoT Security Framework -->
+        <div class="payload-card featured reveal reveal-delay-3">
+          <div class="card-header">
+            <div class="card-icon blue">📡</div>
+            <span class="card-version">FEATURED PROJECT</span>
+          </div>
+          <div class="card-title">Secure IoT Framework — EdgeGuard</div>
+          <div class="card-desc">
+            A lightweight, end-to-end encrypted communication framework for IoT edge devices.
+            Implements mutual TLS authentication, OTA firmware verification, and anomaly detection
+            at the network edge — designed for resource-constrained embedded systems.
+          </div>
+          <div class="featured-inner">
+            <div class="card-tags" style="align-content: start;">
+              <span class="card-tag">MQTT over TLS</span>
+              <span class="card-tag">ESP32 / ARM Cortex</span>
+              <span class="card-tag">Edge Computing</span>
+              <span class="card-tag">OTA Signing</span>
+              <span class="card-tag">Anomaly Detection</span>
+              <span class="card-tag">C / Rust</span>
+              <span class="card-tag">FreeRTOS</span>
+            </div>
+            <div class="featured-metrics">
+              <div class="metric-item">
+                <div class="metric-icon">🔐</div>
+                <div class="metric-text">
+                  <span class="metric-label">Encryption</span>
+                  <span class="metric-value">AES-256-GCM + Ed25519 Signing</span>
+                </div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-text">
+                  <span class="metric-label">Latency</span>
+                  <span class="metric-value">&lt; 12ms edge-to-cloud RTT</span>
+                </div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-icon">📊</div>
+                <div class="metric-text">
+                  <span class="metric-label">Devices Tested</span>
+                  <span class="metric-value">50+ concurrent nodes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════ CALL TO ACTION — The Handshake ═══════════ -->
+    <section id="handshake" class="cta-section">
+      <pre class="cta-ascii reveal">
+   _____ ___  _   _ _   _ _____ ____ _____
+  / ____/ _ \| \ | | \ | | ____/ ___|_   _|
+ | |  | | | |  \| |  \| |  _|| |     | |
+ | |__| |_| | |\  | |\  | |__| |___  | |
+  \____\___/|_| \_|_| \_|_____\____| |_|
+      </pre>
+      <h2 class="cta-title reveal reveal-delay-1">Ready to Deploy This Asset?</h2>
+      <p class="cta-subtitle reveal reveal-delay-2">
+        Establish a direct line to integrate this engineering candidate into your institution's ecosystem.
+      </p>
+      <button class="cta-btn reveal reveal-delay-3" onclick="ModalController.open()" id="cta-handshake-btn">
+        <span>[ INITIATE_ACCEPTANCE_HANDSHAKE ]</span>
+      </button>
+    </section>
+
+  </div><!-- /.page-container -->
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="console-footer">
+    <div class="page-container">
+      <p class="footer-text">
+        <span class="accent">CANDIDATE_CONSOLE</span> v2.1.0 — Built with raw HTML, CSS & JS<br>
+        © 2025 — Compiled for Oceanic University Admissions // <span class="accent">STATUS: OPERATIONAL</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ═══════════ MODAL — Contact Handshake Form ═══════════ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-panel">
+      <button class="modal-close" onclick="ModalController.close()" aria-label="Close modal">×</button>
+
+      <!-- Form Content -->
+      <div id="form-content">
+        <div class="modal-tag">SECURE CHANNEL</div>
+        <h3 class="modal-title">Initiate Handshake Protocol</h3>
+        <p class="modal-subtitle">Establish a direct line to deploy this asset to your campus. All fields encrypted end-to-end.</p>
+
+        <form id="handshake-form">
+          <div class="form-group">
+            <label class="form-label" for="contact-name">INSTITUTION / CONTACT NAME</label>
+            <input type="text" class="form-input" id="contact-name" placeholder="e.g. University of Melbourne — Admissions" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-email">SECURE EMAIL ENDPOINT</label>
+            <input type="email" class="form-input" id="contact-email" placeholder="admissions@university.edu.au" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-program">TARGET PROGRAM / DEPARTMENT</label>
+            <input type="text" class="form-input" id="contact-program" placeholder="e.g. Master of AI, Computer Science" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-message">TRANSMISSION PAYLOAD</label>
+            <textarea class="form-textarea" id="contact-message" placeholder="Enter your message or inquiry here..." rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="form-submit">
+            ⟩ TRANSMIT_HANDSHAKE
+          </button>
+        </form>
+      </div>
+
+      <!-- Success State -->
+      <div id="form-success" class="form-success" style="display: none;">
+        <div class="success-icon">✅</div>
+        <h3>HANDSHAKE_COMPLETE</h3>
+        <p>Transmission received. Connection established.<br>Expect a response within 48 hours.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script src="js/console.js"></script>
+
+</body>
+</html>

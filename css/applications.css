@@ -1,0 +1,306 @@
+/* ==========================================================================
+   UNIPATH — APPLICATION CARDS & DOCUMENT UPLOAD STYLES
+   ========================================================================== */
+
+/* ── Application Card ── */
+.app-card {
+  margin-bottom: 1.5rem;
+}
+
+.app-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.app-card-info {
+  flex: 1;
+}
+
+.app-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+}
+
+.app-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.app-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.app-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ── Progress Section ── */
+.app-progress-section {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.app-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.app-progress-track {
+  width: 100%;
+  height: 7px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.app-progress-fill {
+  height: 100%;
+  background: var(--accent-indigo);
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Document Grid ── */
+.app-documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.85rem;
+}
+
+/* ── Document Slot (base) ── */
+.doc-slot {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  background: var(--bg-card);
+  transition: all var(--transition-fast);
+}
+
+.doc-slot-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+}
+
+.doc-slot-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  flex: 1;
+}
+
+/* ── Status Icons ── */
+.doc-status-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-status-icon.uploaded {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.doc-status-icon.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ── Badges ── */
+.doc-required-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.doc-optional-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* ── Uploaded File Info ── */
+.doc-slot-uploaded {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+
+.doc-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff;
+  border: 1px solid #d1fae5;
+  border-radius: var(--radius-xs);
+}
+
+.doc-file-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-file-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.doc-file-size {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.doc-remove-btn {
+  background: none;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-xs);
+  padding: 0.25rem;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.doc-remove-btn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
+}
+
+/* ── Empty Upload Zone ── */
+.doc-slot-empty {
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+
+.doc-slot-empty:hover,
+.doc-slot-empty.dropzone-active {
+  border-color: var(--accent-indigo);
+  background: rgba(79, 70, 229, 0.03);
+}
+
+.doc-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-xs);
+}
+
+.doc-upload-zone:hover {
+  background: var(--bg-subtle);
+}
+
+.doc-upload-zone span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.doc-upload-zone strong {
+  color: var(--accent-indigo);
+}
+
+.doc-upload-hint {
+  font-size: 0.7rem !important;
+  color: var(--text-muted) !important;
+}
+
+/* ── Dropzone Active State ── */
+.dropzone-active .doc-upload-zone {
+  background: rgba(79, 70, 229, 0.06);
+}
+
+.dropzone-active .doc-upload-zone i {
+  color: var(--accent-indigo) !important;
+}
+
+/* ── Toast Container ── */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-active);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Accent Color Variable Alias ── */
+.tag-amber { background: #fef3c7; color: #b45309; }

@@ -1,26 +1,34 @@
 /* ==========================================================================
-   UNIPATH AUSTRALIA - APP CONTROLLER & TECHNICAL ENGINES
+   UNIPATH — APP CONTROLLER
+   Manages tab navigation, initializes all modules, dashboard stats
    ========================================================================== */
 
 window.App = {
   currentTab: 'explorer',
-  chartInstance: null,
 
-  init() {
+  async init() {
+    // Initialize document storage (IndexedDB)
+    await window.UniDocuments.init();
+
+    // Bind navigation
     this.bindTabNavigation();
+
+    // Initialize modules
     window.UniExplorer.init();
-    window.UniMatcher.init();
-    window.UniTracker.init();
+    window.UniApplications.init();
     window.UniScholarships.init();
-    window.UniEssays.init();
-    
-    // Technical Engines
+
+    // Optional modules
+    if (window.UniMatcher) window.UniMatcher.init();
     if (window.UniConversion) window.UniConversion.init();
     if (window.UniFinancials) window.UniFinancials.init();
     if (window.UniVisa) window.UniVisa.init();
+    if (window.UniEssays) window.UniEssays.init();
 
     this.updateDashboardStats();
-    this.initChart();
+
+    // Student profile form handler
+    this.bindStudentProfile();
   },
 
   bindTabNavigation() {
@@ -44,83 +52,51 @@ window.App = {
       view.classList.toggle('active', view.id === `view-${tabId}`);
     });
 
-    if (tabId === 'tracker') {
-      window.UniTracker.render();
-    } else if (tabId === 'dashboard') {
+    // Refresh data when entering specific tabs
+    if (tabId === 'applications') {
+      window.UniApplications.render();
       this.updateDashboardStats();
-      this.renderChart();
+    } else if (tabId === 'explorer') {
+      window.UniExplorer.render();
     }
 
     if (window.lucide) window.lucide.createIcons();
   },
 
   updateDashboardStats() {
-    const totalApps = window.UniTracker.trackedApps.length;
-    const submittedApps = window.UniTracker.trackedApps.filter(a => a.stage === 'submitted' || a.stage === 'decision').length;
-    const totalTasks = window.UniTracker.trackedApps.reduce((acc, a) => acc + a.tasks.length, 0);
-    const completedTasks = window.UniTracker.trackedApps.reduce((acc, a) => acc + a.tasks.filter(t => t.done).length, 0);
+    const stats = window.UniApplications.getCompletionStats();
 
     const statTotalEl = document.getElementById('stat-total-apps');
-    const statSubEl = document.getElementById('stat-submitted-apps');
-    const statTaskEl = document.getElementById('stat-task-progress');
+    const statCompleteEl = document.getElementById('stat-complete-apps');
+    const statDocsEl = document.getElementById('stat-docs-uploaded');
 
-    if (statTotalEl) statTotalEl.textContent = totalApps;
-    if (statSubEl) statSubEl.textContent = submittedApps;
-    if (statTaskEl) {
-      const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-      statTaskEl.textContent = `${pct}%`;
-    }
+    if (statTotalEl) statTotalEl.textContent = stats.total;
+    if (statCompleteEl) statCompleteEl.textContent = stats.complete;
+    if (statDocsEl) statDocsEl.textContent = `${stats.uploadedDocs}/${stats.totalDocs}`;
   },
 
-  initChart() {
-    const canvas = document.getElementById('dashboard-chart');
-    if (!canvas || typeof Chart === 'undefined') return;
+  bindStudentProfile() {
+    const form = document.getElementById('student-profile-form');
+    if (!form) return;
 
-    const ctx = canvas.getContext('2d');
-    this.chartInstance = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Wishlist', 'Preparing', 'Submitted', 'Interview', 'Decision'],
-        datasets: [{
-          data: [1, 1, 1, 0, 0],
-          backgroundColor: [
-            '#00f2fe',
-            '#4facfe',
-            '#ffb703',
-            '#7c3aed',
-            '#10b981'
-          ],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              color: '#94a3b8',
-              font: { family: 'Plus Jakarta Sans', size: 12 }
-            }
-          }
-        }
-      }
-    });
-  },
-
-  renderChart() {
-    if (!this.chartInstance) {
-      this.initChart();
-      return;
-    }
-
-    const counts = window.UniTracker.stages.map(s => {
-      return window.UniTracker.trackedApps.filter(a => a.stage === s.id).length;
+    // Load existing data
+    const profile = window.UniDocuments.getStudentProfile();
+    const fields = ['name', 'email', 'phone', 'nationality', 'notes'];
+    fields.forEach(f => {
+      const input = document.getElementById(`student-${f}`);
+      if (input && profile[f]) input.value = profile[f];
     });
 
-    this.chartInstance.data.datasets[0].data = counts;
-    this.chartInstance.update();
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {};
+      fields.forEach(f => {
+        const input = document.getElementById(`student-${f}`);
+        data[f] = input ? input.value.trim() : '';
+      });
+      window.UniDocuments.saveStudentProfile(data);
+      this.showToast('Student profile saved!');
+    });
   },
 
   showToast(message) {
