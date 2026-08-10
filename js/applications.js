@@ -95,6 +95,30 @@ window.UniApplications = {
           <div class="app-documents-grid">
             ${app.documents.map(doc => this.renderDocumentSlot(inst.id, doc)).join('')}
           </div>
+
+          <!-- Notes & Checklist -->
+          <div class="app-notes-section">
+            <button class="app-notes-toggle" onclick="UniApplications.toggleNotes('${inst.id}')">
+              <i data-lucide="notebook-pen" style="width: 15px; height: 15px;"></i>
+              Notes & Checklist
+              <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+            </button>
+            <div class="app-notes-content" id="notes-${inst.id}">
+              <textarea class="app-notes-textarea" 
+                        id="note-text-${inst.id}" 
+                        placeholder="Add personal notes about this application..."
+                        onchange="UniApplications.saveNote('${inst.id}', this.value)">${this.getNote(inst.id)}</textarea>
+              
+              <ul class="app-checklist" id="checklist-${inst.id}">
+                ${this.renderChecklist(inst.id)}
+              </ul>
+              <div class="app-checklist-add">
+                <input type="text" id="checklist-input-${inst.id}" placeholder="Add checklist item..." 
+                       onkeydown="if(event.key==='Enter'){UniApplications.addChecklistItem('${inst.id}');}" />
+                <button onclick="UniApplications.addChecklistItem('${inst.id}')">Add</button>
+              </div>
+            </div>
+          </div>
         </div>
       `;
     }).join('');
@@ -186,6 +210,105 @@ window.UniApplications = {
     if (confirm(`Remove ${inst ? inst.shortName : 'this institution'} from your applications? All uploaded documents will be deleted.`)) {
       window.UniDocuments.removeApplication(institutionId);
       this.render();
+    }
+  },
+
+  // ═══════════════ NOTES & CHECKLISTS ═══════════════
+  NOTES_KEY: 'unipath_app_notes',
+  CHECKLIST_KEY: 'unipath_app_checklists',
+
+  toggleNotes(instId) {
+    const content = document.getElementById(`notes-${instId}`);
+    if (content) {
+      content.classList.toggle('expanded');
+    }
+  },
+
+  getNote(instId) {
+    try {
+      const notes = JSON.parse(localStorage.getItem(this.NOTES_KEY)) || {};
+      return notes[instId] || '';
+    } catch { return ''; }
+  },
+
+  saveNote(instId, text) {
+    try {
+      const notes = JSON.parse(localStorage.getItem(this.NOTES_KEY)) || {};
+      notes[instId] = text;
+      localStorage.setItem(this.NOTES_KEY, JSON.stringify(notes));
+    } catch {}
+  },
+
+  getChecklist(instId) {
+    try {
+      const checklists = JSON.parse(localStorage.getItem(this.CHECKLIST_KEY)) || {};
+      return checklists[instId] || [];
+    } catch { return []; }
+  },
+
+  saveChecklist(instId, items) {
+    try {
+      const checklists = JSON.parse(localStorage.getItem(this.CHECKLIST_KEY)) || {};
+      checklists[instId] = items;
+      localStorage.setItem(this.CHECKLIST_KEY, JSON.stringify(checklists));
+    } catch {}
+  },
+
+  renderChecklist(instId) {
+    const items = this.getChecklist(instId);
+    return items.map((item, idx) => `
+      <li class="app-checklist-item ${item.checked ? 'checked' : ''}">
+        <input type="checkbox" ${item.checked ? 'checked' : ''} 
+               onchange="UniApplications.toggleChecklistItem('${instId}', ${idx})" />
+        <label>${item.text}</label>
+        <button style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: auto; padding: 2px;"
+                onclick="UniApplications.removeChecklistItem('${instId}', ${idx})">
+          <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+        </button>
+      </li>
+    `).join('');
+  },
+
+  addChecklistItem(instId) {
+    const input = document.getElementById(`checklist-input-${instId}`);
+    if (!input || !input.value.trim()) return;
+
+    const items = this.getChecklist(instId);
+    items.push({ text: input.value.trim(), checked: false });
+    this.saveChecklist(instId, items);
+    input.value = '';
+
+    // Re-render just the checklist
+    const list = document.getElementById(`checklist-${instId}`);
+    if (list) {
+      list.innerHTML = this.renderChecklist(instId);
+      if (window.lucide) window.lucide.createIcons();
+    }
+  },
+
+  toggleChecklistItem(instId, idx) {
+    const items = this.getChecklist(instId);
+    if (items[idx]) {
+      items[idx].checked = !items[idx].checked;
+      this.saveChecklist(instId, items);
+
+      const list = document.getElementById(`checklist-${instId}`);
+      if (list) {
+        list.innerHTML = this.renderChecklist(instId);
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+  },
+
+  removeChecklistItem(instId, idx) {
+    const items = this.getChecklist(instId);
+    items.splice(idx, 1);
+    this.saveChecklist(instId, items);
+
+    const list = document.getElementById(`checklist-${instId}`);
+    if (list) {
+      list.innerHTML = this.renderChecklist(instId);
+      if (window.lucide) window.lucide.createIcons();
     }
   },
 

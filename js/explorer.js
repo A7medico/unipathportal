@@ -18,6 +18,34 @@ window.UniExplorer = {
     this.render();
   },
 
+  filterByCity(city) {
+    const searchInput = document.getElementById('explorer-search');
+    if (searchInput) {
+      searchInput.value = city;
+      this.currentFilters.search = city.toLowerCase();
+    }
+    // Reset other filters to show all results for this city
+    this.currentFilters.country = 'all';
+    this.currentFilters.type = 'all';
+    this.currentFilters.eliteOnly = false;
+    this.currentFilters.maxTuition = 'all';
+
+    const countrySelect = document.getElementById('filter-country');
+    const typeSelect = document.getElementById('filter-type');
+    const eliteToggle = document.getElementById('filter-elite');
+    const tuitionSelect = document.getElementById('filter-tuition');
+    if (countrySelect) countrySelect.value = 'all';
+    if (typeSelect) typeSelect.value = 'all';
+    if (eliteToggle) eliteToggle.checked = false;
+    if (tuitionSelect) tuitionSelect.value = 'all';
+
+    this.render();
+    // Scroll to results
+    const grid = document.getElementById('university-grid');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    App.showToast(`Showing institutions in ${city}`);
+  },
+
   bindEvents() {
     const searchInput = document.getElementById('explorer-search');
     const countrySelect = document.getElementById('filter-country');
@@ -146,12 +174,17 @@ window.UniExplorer = {
       // Check if already in applications
       const isTracked = window.UniDocuments.getApplications().some(a => a.institutionId === inst.id);
 
+      const isCompared = window.UniCompare ? window.UniCompare.isSelected(inst.id) : false;
+
       return `
         <div class="glass-card uni-card">
           <div class="uni-card-header">
             <img src="${inst.image}" alt="${inst.name}" class="uni-card-img" />
             <div class="uni-card-overlay"></div>
-            ${inst.isElite && inst.eliteGroup ? `<div class="go8-badge"><i data-lucide="award" style="width: 12px; height: 12px;"></i> ${inst.eliteGroup}</div>` : ''}
+            <div class="compare-checkbox ${isCompared ? 'active' : ''}" data-inst-id="${inst.id}" onclick="event.stopPropagation(); UniCompare.toggle('${inst.id}'); UniExplorer.render();" title="Add to comparison">
+              ${isCompared ? '<i data-lucide="check" style="width: 14px; height: 14px;"></i>' : ''}
+            </div>
+            ${inst.isElite && inst.eliteGroup ? `<div class="go8-badge" style="left: 46px;"><i data-lucide="award" style="width: 12px; height: 12px;"></i> ${inst.eliteGroup}</div>` : ''}
             ${inst.worldRank ? `<div class="uni-rank-badge">World #${inst.worldRank}</div>` : `<div class="uni-rank-badge"><i data-lucide="${typeIcon}" style="width: 12px; height: 12px;"></i> ${isLanguage ? 'Language School' : 'University'}</div>`}
           </div>
 

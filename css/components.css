@@ -1,5 +1,6 @@
 /* ==========================================================================
    UNIPATH - MODERN COMPONENTS (Buttons, Cards, Badges, Modals)
+   Enhanced with dark mode support, micro-animations, and premium styles
    ========================================================================== */
 
 /* Buttons */
@@ -32,7 +33,7 @@
 }
 
 .btn-secondary {
-  background: #ffffff;
+  background: var(--bg-card);
   color: var(--text-primary);
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
@@ -48,6 +49,18 @@
   padding: 0.4rem 0.85rem;
   font-size: 0.825rem;
   border-radius: var(--radius-sm);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  padding: 0.45rem 0.75rem;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-subtle);
+  color: var(--accent-indigo);
 }
 
 /* Card Grids */
@@ -131,6 +144,12 @@
   align-items: center;
   gap: 0.35rem;
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .go8-badge {
+  background: rgba(254, 243, 199, 0.15);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
 }
 
 .uni-rank-badge {
@@ -223,6 +242,13 @@
 .tag-gold { background: #fef3c7; color: #b45309; }
 .tag-purple { background: #f3e8ff; color: #6b21a8; }
 .tag-emerald { background: #d1fae5; color: #047857; }
+.tag-amber { background: #fef3c7; color: #b45309; }
+
+[data-theme="dark"] .tag-cyan { background: rgba(2, 132, 199, 0.15); color: #38bdf8; }
+[data-theme="dark"] .tag-gold { background: rgba(217, 119, 6, 0.15); color: #fbbf24; }
+[data-theme="dark"] .tag-purple { background: rgba(124, 58, 237, 0.15); color: #c084fc; }
+[data-theme="dark"] .tag-emerald { background: rgba(5, 150, 105, 0.15); color: #34d399; }
+[data-theme="dark"] .tag-amber { background: rgba(217, 119, 6, 0.15); color: #fbbf24; }
 
 .uni-footer {
   margin-top: auto;
@@ -255,7 +281,8 @@
 }
 
 .modal-card {
-  background: #ffffff;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   max-width: 760px;
   width: 100%;
@@ -292,4 +319,9 @@
 .modal-close:hover {
   background: var(--border-subtle);
   color: var(--text-primary);
+}
+
+/* Wide modal for comparisons */
+.modal-card.modal-wide {
+  max-width: 1000px;
 }

@@ -25,37 +25,65 @@
   <div class="app-container">
     <!-- Header Navbar -->
     <header class="navbar">
-      <a href="#" class="brand">
-        <div class="brand-icon">
-          <i data-lucide="graduation-cap" style="width: 22px; height: 22px;"></i>
-        </div>
-        <div class="brand-text">
-          Uni<span>Path</span>
-          <span class="aus-flag-badge">🌏 AU & NZ</span>
-        </div>
-      </a>
+      <div class="navbar-left">
+        <a href="#" class="brand">
+          <div class="brand-icon">
+            <i data-lucide="graduation-cap" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div class="brand-text">
+            Uni<span>Path</span>
+            <span class="aus-flag-badge">🌏 AU & NZ</span>
+          </div>
+        </a>
 
-      <!-- Navigation Tabs -->
-      <nav class="nav-tabs">
-        <button class="nav-tab active" data-tab="explorer">
-          <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Institutions
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+          <button class="nav-tab active" data-tab="explorer">
+            <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Institutions
+          </button>
+          <button class="nav-tab" data-tab="applications">
+            <i data-lucide="folder-open" style="width: 15px; height: 15px;"></i> Applications
+          </button>
+          <button class="nav-tab" data-tab="timeline">
+            <i data-lucide="git-branch" style="width: 15px; height: 15px;"></i> Timeline
+          </button>
+          <button class="nav-tab" data-tab="matcher">
+            <i data-lucide="calculator" style="width: 15px; height: 15px;"></i> Eligibility
+          </button>
+          <button class="nav-tab" data-tab="scholarships">
+            <i data-lucide="award" style="width: 15px; height: 15px;"></i> Scholarships
+          </button>
+          <button class="nav-tab" data-tab="tools">
+            <i data-lucide="wrench" style="width: 15px; height: 15px;"></i> Tools
+          </button>
+          <button class="nav-tab" data-tab="essays">
+            <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> GS Statement
+          </button>
+        </nav>
+      </div>
+
+      <div class="navbar-right">
+        <!-- Notification Bell -->
+        <div style="position: relative;">
+          <button class="notif-bell" id="notif-bell" aria-label="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="notif-badge" id="notif-badge">0</span>
+          </button>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-dropdown-header">
+              <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--accent-amber);"></i>
+              Upcoming Deadlines
+            </div>
+            <div id="notif-list"></div>
+          </div>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode">
+          <i data-lucide="sun" class="icon-sun" style="width: 18px; height: 18px;"></i>
+          <i data-lucide="moon" class="icon-moon" style="width: 18px; height: 18px;"></i>
         </button>
-        <button class="nav-tab" data-tab="applications">
-          <i data-lucide="folder-open" style="width: 15px; height: 15px;"></i> My Applications
-        </button>
-        <button class="nav-tab" data-tab="matcher">
-          <i data-lucide="calculator" style="width: 15px; height: 15px;"></i> Eligibility
-        </button>
-        <button class="nav-tab" data-tab="scholarships">
-          <i data-lucide="award" style="width: 15px; height: 15px;"></i> Scholarships
-        </button>
-        <button class="nav-tab" data-tab="tools">
-          <i data-lucide="wrench" style="width: 15px; height: 15px;"></i> Visa & Tools
-        </button>
-        <button class="nav-tab" data-tab="essays">
-          <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> GS Statement
-        </button>
-      </nav>
+      </div>
     </header>
 
     <!-- Main Content -->
@@ -82,11 +110,11 @@
 
           <div class="hero-stats">
             <div class="hero-stat-card">
-              <div class="stat-value">8 + 5</div>
+              <div class="stat-value count-up">8 + 5</div>
               <div class="stat-label">AU & NZ Universities</div>
             </div>
             <div class="hero-stat-card">
-              <div class="stat-value">5</div>
+              <div class="stat-value count-up">5</div>
               <div class="stat-label">Language Schools</div>
             </div>
             <div class="hero-stat-card">
@@ -98,10 +126,40 @@
               <div class="stat-label">Applications Started</div>
             </div>
           </div>
+
+          <!-- Interactive Map -->
+          <div class="hero-map-section">
+            <div class="hero-map-title">
+              <i data-lucide="map" style="width: 14px; height: 14px;"></i> INSTITUTION LOCATIONS — Click a city to filter
+            </div>
+            <div class="map-container" id="map-container">
+              <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- Simplified Australia outline -->
+                <path d="M80,200 Q100,150 160,130 Q200,120 250,125 Q300,130 350,140 Q400,130 440,145 Q480,160 500,180 Q520,200 530,230 Q535,260 525,290 Q515,320 490,345 Q460,370 430,380 Q400,390 370,385 Q340,380 310,370 Q280,365 250,370 Q220,375 190,380 Q160,375 140,360 Q120,345 105,320 Q90,295 85,270 Q78,240 80,200 Z" />
+                <!-- Tasmania -->
+                <path d="M410,400 Q420,395 430,400 Q440,410 435,420 Q425,430 415,425 Q405,415 410,400 Z" />
+                <!-- New Zealand North Island -->
+                <path d="M530,280 Q540,260 555,255 Q565,260 570,275 Q575,290 568,305 Q560,315 548,318 Q535,315 530,300 Q528,290 530,280 Z" />
+                <!-- New Zealand South Island -->
+                <path d="M540,325 Q550,320 560,325 Q568,335 565,350 Q558,365 545,370 Q535,365 530,350 Q532,335 540,325 Z" />
+              </svg>
+              <!-- City dots — positioned via percentages -->
+              <div class="map-city-dot" style="left: 78%; top: 42%;" data-city="Sydney" onclick="UniExplorer.filterByCity('Sydney')"></div>
+              <div class="map-city-dot" style="left: 72%; top: 56%;" data-city="Melbourne" onclick="UniExplorer.filterByCity('Melbourne')"></div>
+              <div class="map-city-dot" style="left: 80%; top: 28%;" data-city="Brisbane" onclick="UniExplorer.filterByCity('Brisbane')"></div>
+              <div class="map-city-dot" style="left: 28%; top: 52%;" data-city="Perth" onclick="UniExplorer.filterByCity('Perth')"></div>
+              <div class="map-city-dot" style="left: 60%; top: 56%;" data-city="Adelaide" onclick="UniExplorer.filterByCity('Adelaide')"></div>
+              <div class="map-city-dot" style="left: 72%; top: 44%;" data-city="Canberra" onclick="UniExplorer.filterByCity('Canberra')"></div>
+              <div class="map-city-dot nz" style="left: 92%; top: 55%;" data-city="Auckland" onclick="UniExplorer.filterByCity('Auckland')"></div>
+              <div class="map-city-dot nz" style="left: 91%; top: 63%;" data-city="Wellington" onclick="UniExplorer.filterByCity('Wellington')"></div>
+              <div class="map-city-dot nz" style="left: 90%; top: 70%;" data-city="Christchurch" onclick="UniExplorer.filterByCity('Christchurch')"></div>
+              <div class="map-city-dot nz" style="left: 88%; top: 76%;" data-city="Dunedin" onclick="UniExplorer.filterByCity('Dunedin')"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Filter Bar -->
-        <div class="filter-bar">
+        <div class="filter-bar scroll-reveal">
           <div class="input-group">
             <label class="input-label" for="explorer-search">Search</label>
             <input type="text" id="explorer-search" class="form-control" placeholder="University, program, city..." />
@@ -234,7 +292,16 @@
         <div id="applications-container"></div>
       </section>
 
-      <!-- ═══════════════ VIEW 3: ELIGIBILITY MATCHER ═══════════════ -->
+      <!-- ═══════════════ VIEW 3: APPLICATION TIMELINE ═══════════════ -->
+      <section id="view-timeline" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title"><i data-lucide="git-branch" style="color: var(--accent-purple);"></i> Application Timeline</h2>
+          <p class="section-subtitle">Track your application progress through key milestones. Click milestone icons to update their status.</p>
+        </div>
+        <div id="timeline-container"></div>
+      </section>
+
+      <!-- ═══════════════ VIEW 4: ELIGIBILITY MATCHER ═══════════════ -->
       <section id="view-matcher" class="tab-view">
         <div class="section-header">
           <h2 class="section-title"><i data-lucide="calculator" style="color: var(--accent-blue);"></i> Eligibility Calculator</h2>
@@ -286,7 +353,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════ VIEW 4: SCHOLARSHIPS ═══════════════ -->
+      <!-- ═══════════════ VIEW 5: SCHOLARSHIPS ═══════════════ -->
       <section id="view-scholarships" class="tab-view">
         <div class="section-header">
           <h2 class="section-title"><i data-lucide="award" style="color: var(--accent-amber);"></i> Scholarships — Australia & New Zealand</h2>
@@ -308,17 +375,17 @@
         <div id="scholarships-grid" class="card-grid"></div>
       </section>
 
-      <!-- ═══════════════ VIEW 5: VISA & TOOLS ═══════════════ -->
+      <!-- ═══════════════ VIEW 6: VISA & TOOLS ═══════════════ -->
       <section id="view-tools" class="tab-view">
         <div class="section-header">
           <h2 class="section-title"><i data-lucide="wrench" style="color: var(--accent-indigo);"></i> Visa, Financial & Grade Tools</h2>
-          <p class="section-subtitle">IB/GPA to ATAR conversion, Subclass 500 financial proof calculator, and post-study work visa rights.</p>
+          <p class="section-subtitle">IB/GPA to ATAR conversion, Subclass 500 financial proof calculator, post-study work visa rights, and city cost of living comparison.</p>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.75rem;">
 
           <!-- Tool 1: ATAR Grade Converter -->
-          <div class="glass-card">
+          <div class="glass-card scroll-reveal">
             <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-indigo);">
               <i data-lucide="arrow-right-left" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">ATAR Grade Converter</h3>
@@ -350,7 +417,7 @@
           </div>
 
           <!-- Tool 2: Financial Calculator -->
-          <div class="glass-card">
+          <div class="glass-card scroll-reveal scroll-reveal-delay-1">
             <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-amber);">
               <i data-lucide="coins" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">DHA Financial Proof (Subclass 500)</h3>
@@ -390,7 +457,7 @@
           </div>
 
           <!-- Tool 3: Post-Study Work Visa -->
-          <div class="glass-card">
+          <div class="glass-card scroll-reveal scroll-reveal-delay-2">
             <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-emerald);">
               <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">Subclass 485 Work Rights</h3>
@@ -422,7 +489,7 @@
           </div>
         </div>
 
-        <div class="glass-card" style="padding: 1.25rem; display: flex; align-items: center; gap: 1.25rem;">
+        <div class="glass-card scroll-reveal" style="padding: 1.25rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem;">
           <i data-lucide="clock" style="width: 30px; height: 30px; color: var(--accent-indigo); flex-shrink: 0;"></i>
           <div>
             <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem;">Subclass 500 Work Hours</h4>
@@ -431,9 +498,18 @@
             </p>
           </div>
         </div>
+
+        <!-- Cost of Living Comparison Section -->
+        <div class="section-header scroll-reveal">
+          <h2 class="section-title" style="font-size: 1.35rem;">
+            <i data-lucide="bar-chart-3" style="color: var(--accent-cyan);"></i> Cost of Living Comparison
+          </h2>
+          <p class="section-subtitle">Monthly living costs comparison across major AU & NZ student cities (shared accommodation, student budget).</p>
+        </div>
+        <div id="col-container"></div>
       </section>
 
-      <!-- ═══════════════ VIEW 6: GS STATEMENT ═══════════════ -->
+      <!-- ═══════════════ VIEW 7: GS STATEMENT ═══════════════ -->
       <section id="view-essays" class="tab-view">
         <div class="section-header">
           <h2 class="section-title"><i data-lucide="file-text" style="color: var(--accent-emerald);"></i> Genuine Student (GS) Statement Workspace</h2>
@@ -483,12 +559,90 @@
               <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Address any study gaps clearly.</li>
               <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Financial ties to home country.</li>
               <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Immigration history (if applicable).</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Your plan to return home after studies.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Why this specific institution over others.</li>
             </ul>
           </div>
         </div>
       </section>
 
     </main>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-brand-name">Uni<span>Path</span></div>
+          <p class="footer-brand-desc">Your comprehensive admissions portal for Australian & New Zealand universities and language schools. Browse, compare, apply — all in one place.</p>
+        </div>
+        <div>
+          <div class="footer-section-title">Quick Links</div>
+          <ul class="footer-links">
+            <li><button onclick="App.switchTab('explorer')">Browse Institutions</button></li>
+            <li><button onclick="App.switchTab('applications')">My Applications</button></li>
+            <li><button onclick="App.switchTab('matcher')">Eligibility Calculator</button></li>
+            <li><button onclick="App.switchTab('scholarships')">Scholarships</button></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-section-title">Tools</div>
+          <ul class="footer-links">
+            <li><button onclick="App.switchTab('tools')">ATAR Converter</button></li>
+            <li><button onclick="App.switchTab('tools')">Financial Calculator</button></li>
+            <li><button onclick="App.switchTab('tools')">Work Visa Rights</button></li>
+            <li><button onclick="App.switchTab('tools')">Cost of Living</button></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-section-title">Resources</div>
+          <ul class="footer-links">
+            <li><button onclick="App.switchTab('essays')">GS Statement Guide</button></li>
+            <li><button onclick="App.switchTab('timeline')">Application Timeline</button></li>
+            <li><a href="candidate-console/index.html">Candidate Console</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 UniPath Portal — Oceanic Education Admissions</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="candidate-console/index.html">Developer Console</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Compare FAB -->
+  <button class="compare-fab" id="compare-fab" onclick="UniCompare.openComparison()">
+    <i data-lucide="columns" style="width: 18px; height: 18px;"></i>
+    Compare (<span class="compare-count">0</span>)
+  </button>
+
+  <!-- Floating Action Bar -->
+  <div class="floating-action-bar" id="floating-action-bar">
+    <button class="fab-btn fab-primary" onclick="App.switchTab('explorer')">
+      <i data-lucide="compass" style="width: 16px; height: 16px;"></i>
+      <span class="fab-label">Explore</span>
+    </button>
+    <div class="fab-divider"></div>
+    <button class="fab-btn" onclick="App.switchTab('applications')">
+      <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i>
+      <span class="fab-label">Apps</span>
+    </button>
+    <button class="fab-btn" onclick="App.switchTab('matcher')">
+      <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
+      <span class="fab-label">Match</span>
+    </button>
+    <button class="fab-btn" onclick="App.toggleTheme()">
+      <i data-lucide="palette" style="width: 16px; height: 16px;"></i>
+      <span class="fab-label">Theme</span>
+    </button>
+    <div class="fab-divider"></div>
+    <button class="fab-btn" onclick="UniDocuments.exportAllApplications()">
+      <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+      <span class="fab-label">Export</span>
+    </button>
   </div>
 
   <!-- Modal Overlay -->
@@ -511,6 +665,11 @@
   <script src="js/visa.js"></script>
   <script src="js/scholarships.js"></script>
   <script src="js/essays.js"></script>
+  <script src="js/deadlines.js"></script>
+  <script src="js/comparison.js"></script>
+  <script src="js/costliving.js"></script>
+  <script src="js/timeline.js"></script>
   <script src="js/app.js"></script>
+
 </body>
 </html>
