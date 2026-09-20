@@ -175,6 +175,12 @@ window.UniExplorer = {
       const isTracked = window.UniDocuments.getApplications().some(a => a.institutionId === inst.id);
 
       const isCompared = window.UniCompare ? window.UniCompare.isSelected(inst.id) : false;
+      const isFav = window.UniFavorites ? window.UniFavorites.isFavorite(inst.id) : false;
+
+      // Format tuition cleanly
+      const tuitionFormatted = typeof inst.tuitionLocal === 'number'
+        ? (inst.tuitionLocal >= 1000 ? (inst.tuitionLocal / 1000).toFixed(1) + 'k' : inst.tuitionLocal)
+        : inst.tuitionLocal;
 
       return `
         <div class="glass-card uni-card">
@@ -184,8 +190,11 @@ window.UniExplorer = {
             <div class="compare-checkbox ${isCompared ? 'active' : ''}" data-inst-id="${inst.id}" onclick="event.stopPropagation(); UniCompare.toggle('${inst.id}'); UniExplorer.render();" title="Add to comparison">
               ${isCompared ? '<i data-lucide="check" style="width: 14px; height: 14px;"></i>' : ''}
             </div>
-            ${inst.isElite && inst.eliteGroup ? `<div class="go8-badge" style="left: 46px;"><i data-lucide="award" style="width: 12px; height: 12px;"></i> ${inst.eliteGroup}</div>` : ''}
-            ${inst.worldRank ? `<div class="uni-rank-badge">World #${inst.worldRank}</div>` : `<div class="uni-rank-badge"><i data-lucide="${typeIcon}" style="width: 12px; height: 12px;"></i> ${isLanguage ? 'Language School' : 'University'}</div>`}
+            <button class="favorite-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); UniFavorites.toggle('${inst.id}'); UniExplorer.render();" title="${isFav ? 'Remove from saved' : 'Save institution'}">
+              <i data-lucide="heart" style="width: 16px; height: 16px; ${isFav ? 'fill: currentColor;' : ''}"></i>
+            </button>
+            ${inst.worldRank ? `<div class="uni-rank-badge">#${inst.worldRank}</div>` : `<div class="uni-rank-badge"><i data-lucide="${typeIcon}" style="width: 11px; height: 11px;"></i> ${isLanguage ? 'Language' : 'University'}</div>`}
+            ${inst.isElite && inst.eliteGroup ? `<div class="go8-badge"><i data-lucide="award" style="width: 11px; height: 11px;"></i> ${inst.eliteGroup}</div>` : ''}
           </div>
 
           <div class="uni-title-row">
@@ -193,60 +202,30 @@ window.UniExplorer = {
           </div>
 
           <div class="uni-location">
-            <span style="font-size: 1.1em;">${flag}</span>
-            <span>${inst.city} • ${inst.country}</span>
+            <span style="font-size: 1em;">${flag}</span>
+            <span>${inst.city}, ${inst.country}</span>
           </div>
 
-          <div class="uni-stats-grid">
-            ${!isLanguage ? `
-              <div class="uni-mini-stat">
-                <span class="mini-val">${inst.atarEquivalent || 'N/A'}${inst.atarEquivalent ? '+' : ''}</span>
-                <span class="mini-lbl">Min ATAR</span>
-              </div>
-            ` : `
-              <div class="uni-mini-stat">
-                <span class="mini-val">${inst.minIelts || 'Any'}+</span>
-                <span class="mini-lbl">IELTS</span>
-              </div>
-            `}
-            <div class="uni-mini-stat">
-              <span class="mini-val">${currencySymbol} $${typeof inst.tuitionLocal === 'number' ? (inst.tuitionLocal >= 1000 ? (inst.tuitionLocal / 1000).toFixed(1) + 'k' : inst.tuitionLocal) : inst.tuitionLocal}</span>
-              <span class="mini-lbl">${isLanguage ? 'Per Week' : 'Tuition/Yr'}</span>
-            </div>
-            ${!isLanguage ? `
-              <div class="uni-mini-stat">
-                <span class="mini-val">${inst.minIelts}</span>
-                <span class="mini-lbl">IELTS</span>
-              </div>
-              <div class="uni-mini-stat">
-                <span class="mini-val">${inst.minPte}+</span>
-                <span class="mini-lbl">PTE</span>
-              </div>
-            ` : `
-              <div class="uni-mini-stat">
-                <span class="mini-val">${inst.programs.length}</span>
-                <span class="mini-lbl">Programs</span>
-              </div>
-              <div class="uni-mini-stat">
-                <span class="mini-val">Rolling</span>
-                <span class="mini-lbl">Intake</span>
-              </div>
-            `}
+          <div style="padding: 0 1.25rem 0.75rem; display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap;">
+            <span style="font-family: var(--font-heading); font-weight: 800; font-size: 1rem; color: var(--accent-primary);">${currencySymbol} $${tuitionFormatted}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">${isLanguage ? '/ week' : '/ year'}</span>
+            ${!isLanguage && inst.minIelts ? `<span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-left: auto;">IELTS ${inst.minIelts}+</span>` : ''}
+            ${isLanguage ? `<span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-left: auto;">${inst.programs.length} programs</span>` : ''}
           </div>
 
           <div class="uni-tags">
             <span class="tag tag-cyan">${inst.providerCode}</span>
-            ${inst.tags.slice(0, 2).map(t => `<span class="tag tag-purple">${t}</span>`).join('')}
+            ${inst.tags.slice(0, 1).map(t => `<span class="tag tag-purple">${t}</span>`).join('')}
           </div>
 
           <div class="uni-footer">
             <button class="btn btn-secondary btn-sm" onclick="UniExplorer.showModal('${inst.id}')" style="flex: 1;">
-              <i data-lucide="info" style="width: 14px; height: 14px;"></i> Details & Requirements
+              Details
             </button>
             <button class="btn ${isTracked ? 'btn-secondary' : 'btn-primary'} btn-sm" 
                     onclick="UniExplorer.applyViaUnipath('${inst.id}')"
-                    ${isTracked ? 'disabled style="opacity: 0.6;"' : ''}>
-              <i data-lucide="${isTracked ? 'check' : 'plus'}" style="width: 14px; height: 14px;"></i>
+                    ${isTracked ? 'disabled style="opacity: 0.5;"' : ''}>
+              <i data-lucide="${isTracked ? 'check' : 'plus'}" style="width: 13px; height: 13px;"></i>
               ${isTracked ? 'Added' : 'Apply'}
             </button>
           </div>

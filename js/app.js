@@ -1,11 +1,14 @@
 /* ==========================================================================
    UNIPATH — APP CONTROLLER
    Manages tab navigation, initializes all modules, dashboard stats,
-   dark mode, scroll reveals, count-up animations, and floating action bar
+   dark mode, scroll reveals, count-up animations, floating action bar,
+   keyboard shortcuts, command palette, and hamburger menu
    ========================================================================== */
 
 window.App = {
   currentTab: 'explorer',
+  commandPaletteOpen: false,
+  shortcutsPanelOpen: false,
 
   async init() {
     // Initialize document storage (IndexedDB)
@@ -13,6 +16,9 @@ window.App = {
 
     // Apply saved theme
     this.loadTheme();
+    this.loadColorTheme();
+    this.bindThemePaletteEvents();
+    this.bindModalOverlayEvents();
 
     // Bind navigation
     this.bindTabNavigation();
@@ -34,6 +40,7 @@ window.App = {
     if (window.UniCompare) window.UniCompare.init();
     if (window.UniCostLiving) window.UniCostLiving.init();
     if (window.UniTimeline) window.UniTimeline.init();
+    if (window.UniFavorites) window.UniFavorites.init();
 
     this.updateDashboardStats();
 
@@ -48,6 +55,15 @@ window.App = {
 
     // Count-up animation for hero stats
     this.setupCountUp();
+
+    // Keyboard shortcuts
+    this.bindKeyboardShortcuts();
+
+    // Command palette
+    this.bindCommandPalette();
+
+    // Hamburger menu
+    this.bindHamburgerMenu();
   },
 
   // ═══════════════ TAB NAVIGATION ═══════════════
@@ -57,6 +73,10 @@ window.App = {
       tab.addEventListener('click', () => {
         const targetViewId = tab.getAttribute('data-tab');
         this.switchTab(targetViewId);
+
+        // Close mobile menu
+        const navTabs = document.getElementById('nav-tabs');
+        if (navTabs) navTabs.classList.remove('mobile-open');
       });
     });
   },
@@ -80,6 +100,8 @@ window.App = {
       window.UniExplorer.render();
     } else if (tabId === 'timeline') {
       if (window.UniTimeline) window.UniTimeline.render();
+    } else if (tabId === 'favorites') {
+      if (window.UniFavorites) window.UniFavorites.render();
     } else if (tabId === 'tools') {
       if (window.UniCostLiving) {
         // Re-trigger bar animations
@@ -135,7 +157,7 @@ window.App = {
     });
   },
 
-  // ═══════════════ DARK MODE ═══════════════
+  // ═══════════════ DARK MODE & COLOR THEMES ═══════════════
   loadTheme() {
     const savedTheme = localStorage.getItem('unipath_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -147,6 +169,205 @@ window.App = {
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('unipath_theme', newTheme);
     this.showToast(`${newTheme === 'dark' ? '🌙 Dark' : '☀️ Light'} mode activated`);
+    if (window.lucide) lucide.createIcons();
+  },
+
+  loadColorTheme() {
+    const savedColor = localStorage.getItem('unipath_color_theme') || 'oceanic';
+    this.setColorTheme(savedColor, false);
+  },
+
+  setColorTheme(themeId, notify = true) {
+    const validThemes = ['oceanic', 'emerald', 'sunset', 'amethyst', 'cyber', 'amber'];
+    const selected = validThemes.includes(themeId) ? themeId : 'oceanic';
+    document.documentElement.setAttribute('data-color-theme', selected);
+    localStorage.setItem('unipath_color_theme', selected);
+
+    // Update active class on dropdown buttons
+    const buttons = document.querySelectorAll('.theme-option-btn');
+    buttons.forEach(btn => {
+      if (btn.getAttribute('data-theme-id') === selected) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const themeNames = {
+      oceanic: 'Oceanic Clarity (Indigo & Sky)',
+      emerald: 'Emerald Horizon (Rainforest & Mint)',
+      sunset: 'Sunset Coral (Outback & Amber)',
+      amethyst: 'Royal Amethyst (Violet & Orchid)',
+      cyber: 'Nordic Slate (Cobalt & Arctic Cyan)',
+      amber: 'Golden Wattle (Honey Gold & Sage)'
+    };
+
+    if (notify) {
+      this.showToast(`🎨 Theme switched to ${themeNames[selected] || selected}`);
+      const dd = document.getElementById('theme-palette-dropdown');
+      if (dd) dd.classList.remove('active');
+    }
+  },
+
+  toggleThemePalette(e) {
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
+    const dd = document.getElementById('theme-palette-dropdown');
+    if (!dd) return;
+    const isActive = dd.classList.toggle('active');
+    if (isActive) {
+      const notifDd = document.getElementById('notif-dropdown');
+      if (notifDd) notifDd.classList.remove('active');
+      if (window.lucide) lucide.createIcons();
+    }
+  },
+
+  bindThemePaletteEvents() {
+    const btn = document.getElementById('theme-palette-btn');
+    const dropdown = document.getElementById('theme-palette-dropdown');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleThemePalette(e);
+      });
+    }
+    document.addEventListener('click', (e) => {
+      if (dropdown && dropdown.classList.contains('active')) {
+        if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          dropdown.classList.remove('active');
+        }
+      }
+    });
+    if (dropdown) {
+      dropdown.addEventListener('click', (e) => e.stopPropagation());
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (dropdown && dropdown.classList.contains('active')) {
+          dropdown.classList.remove('active');
+        }
+        this.closeModal();
+      }
+    });
+  },
+
+  bindModalOverlayEvents() {
+    const overlay = document.getElementById('uni-modal-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          this.closeModal();
+        }
+      });
+    }
+  },
+
+  openThemeModal() {
+    const overlay = document.getElementById('uni-modal-overlay');
+    const container = document.getElementById('uni-modal-content');
+    if (!overlay || !container) return;
+
+    // Close palette dropdown if open
+    const dd = document.getElementById('theme-palette-dropdown');
+    if (dd) dd.classList.remove('active');
+
+    const currentTheme = document.documentElement.getAttribute('data-color-theme') || 'oceanic';
+    const currentMode = document.documentElement.getAttribute('data-theme') || 'light';
+
+    const themes = [
+      { id: 'oceanic', name: 'Oceanic Clarity', desc: 'Indigo & Sky Cyan', primary: '#4f46e5', secondary: '#0ea5e9', vibe: 'Classic AU & NZ Admissions' },
+      { id: 'emerald', name: 'Emerald Horizon', desc: 'Rainforest Jade & Mint', primary: '#059669', secondary: '#0d9488', vibe: 'Lush Rainforests & Nature' },
+      { id: 'sunset', name: 'Sunset Coral', desc: 'Outback Coral & Amber', primary: '#e11d48', secondary: '#ea580c', vibe: 'Warm Outback Sunset' },
+      { id: 'amethyst', name: 'Royal Amethyst', desc: 'Academic Violet & Orchid', primary: '#7c3aed', secondary: '#c026d3', vibe: 'Prestigious University Regalia' },
+      { id: 'cyber', name: 'Nordic Slate', desc: 'Cobalt & Arctic Cyan', primary: '#2563eb', secondary: '#06b6d4', vibe: 'Clean Modern Precision' },
+      { id: 'amber', name: 'Golden Wattle', desc: 'Honey Gold & Sage', primary: '#d97706', secondary: '#059669', vibe: 'Australian Floral Emblem' }
+    ];
+
+    container.innerHTML = `
+      <div class="theme-modal-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <div class="brand-icon" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                <i data-lucide="palette" style="width: 18px; height: 18px;"></i>
+              </div>
+              <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">Theme Studio</h2>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Test and switch between 6 beautifully tuned color themes in real time.</p>
+          </div>
+          <button class="modal-close" onclick="App.closeModal()" aria-label="Close modal">
+            <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+          </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.15rem; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <i data-lucide="${currentMode === 'dark' ? 'moon' : 'sun'}" style="width: 18px; height: 18px; color: var(--accent-primary);"></i>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Active Mode: <strong>${currentMode === 'dark' ? 'Dark Mode 🌙' : 'Light Mode ☀️'}</strong></span>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="App.toggleTheme(); App.openThemeModal();">
+            Toggle Light / Dark
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.85rem; margin-bottom: 1.5rem;">
+          ${themes.map(t => {
+            const isActive = t.id === currentTheme;
+            return `
+              <div class="theme-card-picker" onclick="App.setColorTheme('${t.id}'); App.openThemeModal();" style="
+                border: 2px solid ${isActive ? 'var(--accent-primary)' : 'var(--border-subtle)'};
+                background: ${isActive ? 'var(--accent-primary-soft)' : 'var(--bg-card)'};
+                border-radius: var(--radius-sm);
+                padding: 1rem;
+                cursor: pointer;
+                transition: all var(--transition-fast);
+                display: flex;
+                flex-direction: column;
+                gap: 0.65rem;
+                position: relative;
+              ">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <div style="
+                      width: 30px;
+                      height: 30px;
+                      border-radius: 50%;
+                      background: linear-gradient(135deg, ${t.primary}, ${t.secondary});
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                      border: 2px solid var(--bg-card);
+                      flex-shrink: 0;
+                    "></div>
+                    <div>
+                      <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary);">${t.name}</div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted);">${t.desc}</div>
+                    </div>
+                  </div>
+                  ${isActive ? `<span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-primary); background: var(--bg-card); padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid var(--accent-primary-border);">Active</span>` : ''}
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.35rem 0.6rem; border-radius: 6px;">
+                  ${t.vibe}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button class="btn btn-primary" onclick="App.closeModal()">
+            Done Testing
+          </button>
+        </div>
+      </div>
+    `;
+
+    overlay.classList.add('active');
+    if (window.lucide) lucide.createIcons();
+  },
+
+  closeModal() {
+    const overlay = document.getElementById('uni-modal-overlay');
+    if (overlay) overlay.classList.remove('active');
   },
 
   // ═══════════════ SCROLL REVEAL ANIMATIONS ═══════════════
@@ -226,7 +447,6 @@ window.App = {
     const fab = document.getElementById('floating-action-bar');
     if (!fab) return;
 
-    let lastScrollY = 0;
     let ticking = false;
 
     window.addEventListener('scroll', () => {
@@ -238,12 +458,249 @@ window.App = {
           } else {
             fab.classList.remove('visible');
           }
-          lastScrollY = scrollY;
           ticking = false;
         });
         ticking = true;
       }
     });
+  },
+
+  // ═══════════════ HAMBURGER MENU ═══════════════
+  bindHamburgerMenu() {
+    const btn = document.getElementById('hamburger-btn');
+    const navTabs = document.getElementById('nav-tabs');
+    if (!btn || !navTabs) return;
+
+    btn.addEventListener('click', () => {
+      navTabs.classList.toggle('mobile-open');
+    });
+  },
+
+  // ═══════════════ KEYBOARD SHORTCUTS ═══════════════
+  bindKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts when typing in inputs
+      const tag = e.target.tagName.toLowerCase();
+      const isTyping = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+
+      // Ctrl+K — Command Palette (always works)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.toggleCommandPalette();
+        return;
+      }
+
+      // Escape — close any open panels
+      if (e.key === 'Escape') {
+        if (this.commandPaletteOpen) {
+          this.closeCommandPalette();
+          return;
+        }
+        if (this.shortcutsPanelOpen) {
+          this.closeShortcutsPanel();
+          return;
+        }
+        return;
+      }
+
+      if (isTyping) return;
+
+      // Number keys 1-8 for tab switching
+      const tabMap = {
+        '1': 'explorer',
+        '2': 'applications',
+        '3': 'timeline',
+        '4': 'matcher',
+        '5': 'scholarships',
+        '6': 'tools',
+        '7': 'essays',
+        '8': 'favorites'
+      };
+
+      if (tabMap[e.key]) {
+        e.preventDefault();
+        this.switchTab(tabMap[e.key]);
+        return;
+      }
+
+      // ? — Keyboard shortcuts help
+      if (e.key === '?') {
+        e.preventDefault();
+        this.toggleShortcutsPanel();
+        return;
+      }
+
+      // D — Toggle dark mode
+      if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        this.toggleTheme();
+        return;
+      }
+    });
+  },
+
+  // ═══════════════ COMMAND PALETTE ═══════════════
+  bindCommandPalette() {
+    const overlay = document.getElementById('command-palette-overlay');
+    const input = document.getElementById('command-palette-input');
+    const results = document.getElementById('command-palette-results');
+
+    if (!overlay || !input || !results) return;
+
+    // Close on overlay click
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) this.closeCommandPalette();
+    });
+
+    // Search on input
+    input.addEventListener('input', () => {
+      this.renderCommandPaletteResults(input.value.trim().toLowerCase());
+    });
+
+    // Keyboard navigation within palette
+    input.addEventListener('keydown', (e) => {
+      const items = results.querySelectorAll('.command-palette-item');
+      const activeItem = results.querySelector('.command-palette-item.active');
+      let activeIndex = Array.from(items).indexOf(activeItem);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (activeItem) activeItem.classList.remove('active');
+        activeIndex = (activeIndex + 1) % items.length;
+        items[activeIndex]?.classList.add('active');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (activeItem) activeItem.classList.remove('active');
+        activeIndex = activeIndex <= 0 ? items.length - 1 : activeIndex - 1;
+        items[activeIndex]?.classList.add('active');
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const active = results.querySelector('.command-palette-item.active') || items[0];
+        if (active) active.click();
+      }
+    });
+  },
+
+  openCommandPalette() {
+    const overlay = document.getElementById('command-palette-overlay');
+    const input = document.getElementById('command-palette-input');
+    if (!overlay || !input) return;
+
+    this.commandPaletteOpen = true;
+    overlay.classList.add('active');
+    input.value = '';
+    input.focus();
+    this.renderCommandPaletteResults('');
+  },
+
+  closeCommandPalette() {
+    const overlay = document.getElementById('command-palette-overlay');
+    if (!overlay) return;
+
+    this.commandPaletteOpen = false;
+    overlay.classList.remove('active');
+  },
+
+  toggleCommandPalette() {
+    if (this.commandPaletteOpen) {
+      this.closeCommandPalette();
+    } else {
+      this.openCommandPalette();
+    }
+  },
+
+  renderCommandPaletteResults(query) {
+    const results = document.getElementById('command-palette-results');
+    if (!results) return;
+
+    const items = [];
+
+    // Tab actions
+    const tabs = [
+      { icon: 'compass', label: 'Go to Institutions', action: () => this.switchTab('explorer') },
+      { icon: 'folder-open', label: 'Go to Applications', action: () => this.switchTab('applications') },
+      { icon: 'git-branch', label: 'Go to Timeline', action: () => this.switchTab('timeline') },
+      { icon: 'calculator', label: 'Go to Eligibility', action: () => this.switchTab('matcher') },
+      { icon: 'award', label: 'Go to Scholarships', action: () => this.switchTab('scholarships') },
+      { icon: 'wrench', label: 'Go to Tools', action: () => this.switchTab('tools') },
+      { icon: 'file-text', label: 'Go to GS Statement', action: () => this.switchTab('essays') },
+      { icon: 'heart', label: 'Go to Saved', action: () => this.switchTab('favorites') },
+      { icon: 'sun', label: 'Toggle Dark Mode', action: () => this.toggleTheme() },
+      { icon: 'palette', label: 'Theme: Oceanic Clarity (Indigo & Sky)', action: () => this.setColorTheme('oceanic') },
+      { icon: 'palette', label: 'Theme: Emerald Horizon (Rainforest & Mint)', action: () => this.setColorTheme('emerald') },
+      { icon: 'palette', label: 'Theme: Sunset Coral (Outback & Amber)', action: () => this.setColorTheme('sunset') },
+      { icon: 'palette', label: 'Theme: Royal Amethyst (Violet & Orchid)', action: () => this.setColorTheme('amethyst') },
+      { icon: 'palette', label: 'Theme: Nordic Slate (Cobalt & Arctic Cyan)', action: () => this.setColorTheme('cyber') },
+      { icon: 'palette', label: 'Theme: Golden Wattle (Honey Gold & Sage)', action: () => this.setColorTheme('amber') },
+      { icon: 'download', label: 'Export All Applications', action: () => { window.UniDocuments.exportAllApplications(); } },
+    ];
+
+    // Institution search
+    const institutions = window.UniData.institutions || [];
+
+    tabs.forEach(tab => {
+      if (!query || tab.label.toLowerCase().includes(query)) {
+        items.push(tab);
+      }
+    });
+
+    institutions.forEach(inst => {
+      if (!query || inst.name.toLowerCase().includes(query) || inst.shortName.toLowerCase().includes(query) || inst.city.toLowerCase().includes(query)) {
+        items.push({
+          icon: inst.type === 'language' ? 'book-open' : 'graduation-cap',
+          label: `${inst.shortName} — ${inst.city}, ${inst.country}`,
+          action: () => { this.switchTab('explorer'); UniExplorer.showModal(inst.id); }
+        });
+      }
+    });
+
+    // Limit results
+    const displayed = items.slice(0, 12);
+
+    if (displayed.length === 0) {
+      results.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.88rem;">No results found</div>`;
+      return;
+    }
+
+    results.innerHTML = displayed.map((item, i) => `
+      <div class="command-palette-item ${i === 0 ? 'active' : ''}" data-index="${i}">
+        <i data-lucide="${item.icon}" style="width: 18px; height: 18px;"></i>
+        <span>${item.label}</span>
+      </div>
+    `).join('');
+
+    // Bind click handlers
+    results.querySelectorAll('.command-palette-item').forEach((el, idx) => {
+      el.addEventListener('click', () => {
+        this.closeCommandPalette();
+        displayed[idx].action();
+      });
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  // ═══════════════ SHORTCUTS PANEL ═══════════════
+  toggleShortcutsPanel() {
+    if (this.shortcutsPanelOpen) {
+      this.closeShortcutsPanel();
+    } else {
+      this.openShortcutsPanel();
+    }
+  },
+
+  openShortcutsPanel() {
+    const panel = document.getElementById('shortcuts-panel');
+    if (!panel) return;
+    this.shortcutsPanelOpen = true;
+    panel.classList.add('active');
+  },
+
+  closeShortcutsPanel() {
+    const panel = document.getElementById('shortcuts-panel');
+    if (!panel) return;
+    this.shortcutsPanelOpen = false;
+    panel.classList.remove('active');
   },
 
   // ═══════════════ TOAST NOTIFICATIONS ═══════════════
@@ -254,7 +711,7 @@ window.App = {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerHTML = `
-      <i data-lucide="sparkles" style="width: 18px; height: 18px; color: var(--accent-cyan);"></i>
+      <i data-lucide="sparkles" style="width: 18px; height: 18px; color: var(--accent-primary);"></i>
       <span>${message}</span>
     `;
 

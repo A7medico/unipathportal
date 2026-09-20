@@ -1,10 +1,13 @@
 /* ==========================================================================
    UNIPATH — APPLICATION CARDS & DOCUMENT UPLOAD STYLES
+   Oceanic Clarity · Gradient progress bars · Modern document slots
    ========================================================================== */
 
 /* ── Application Card ── */
 .app-card {
   margin-bottom: 1.5rem;
+  border-left: 4px solid var(--accent-primary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 .app-card-header {
@@ -21,21 +24,22 @@
 
 .app-card-title {
   font-family: var(--font-heading);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .app-card-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.825rem;
+  gap: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -48,14 +52,14 @@
 
 .app-card-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-shrink: 0;
 }
 
 /* ── Progress Section ── */
 .app-progress-section {
-  margin-bottom: 1.25rem;
-  padding: 0.85rem 1rem;
+  margin-bottom: 1.15rem;
+  padding: 0.75rem 0.95rem;
   background: var(--bg-subtle);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
@@ -64,15 +68,15 @@
 .app-progress-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
   font-weight: 600;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .app-progress-track {
   width: 100%;
-  height: 7px;
+  height: 6px;
   background: var(--border-subtle);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -80,19 +84,37 @@
 
 .app-progress-fill {
   height: 100%;
-  background: var(--accent-indigo);
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
   border-radius: var(--radius-full);
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+[data-theme="dark"] .app-progress-fill {
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+}
+
+.app-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: progressShimmer 2s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ── Document Grid ── */
 .app-documents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.75rem;
 }
 
-/* ── Document Slot (base) ── */
+/* ── Document Slot ── */
 .doc-slot {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -104,12 +126,12 @@
 .doc-slot-header {
   display: flex;
   align-items: flex-start;
-  gap: 0.55rem;
-  margin-bottom: 0.65rem;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .doc-slot-label {
-  font-size: 0.825rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.35;
@@ -128,55 +150,55 @@
 }
 
 .doc-status-icon.uploaded {
-  background: #d1fae5;
-  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-success);
 }
 
 .doc-status-icon.pending {
-  background: #fef3c7;
-  color: #b45309;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-warning);
 }
 
 /* ── Badges ── */
 .doc-required-badge {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #dc2626;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  padding: 0.1rem 0.45rem;
+  color: var(--accent-danger);
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  padding: 0.12rem 0.45rem;
   border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
 .doc-optional-badge {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-muted);
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
-  padding: 0.1rem 0.45rem;
+  padding: 0.12rem 0.45rem;
   border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
 /* ── Uploaded File Info ── */
 .doc-slot-uploaded {
-  border-color: #a7f3d0;
-  background: #f0fdf4;
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.02);
 }
 
 .doc-file-info {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 0.65rem;
-  background: #ffffff;
-  border: 1px solid #d1fae5;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: var(--radius-xs);
 }
 
@@ -187,7 +209,7 @@
 }
 
 .doc-file-name {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
@@ -197,17 +219,17 @@
 }
 
 .doc-file-size {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 
 .doc-remove-btn {
   background: none;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius-xs);
-  padding: 0.25rem;
+  padding: 0.2rem;
   cursor: pointer;
-  color: #ef4444;
+  color: var(--accent-danger);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,8 +237,8 @@
 }
 
 .doc-remove-btn:hover {
-  background: #fef2f2;
-  border-color: #f87171;
+  background: rgba(239, 68, 68, 0.06);
+  border-color: var(--accent-danger);
 }
 
 /* ── Empty Upload Zone ── */
@@ -227,8 +249,8 @@
 
 .doc-slot-empty:hover,
 .doc-slot-empty.dropzone-active {
-  border-color: var(--accent-indigo);
-  background: rgba(79, 70, 229, 0.03);
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-soft);
 }
 
 .doc-upload-zone {
@@ -236,71 +258,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
-  padding: 1rem;
+  gap: 0.25rem;
+  padding: 0.85rem;
   cursor: pointer;
   text-align: center;
   transition: all var(--transition-fast);
   border-radius: var(--radius-xs);
 }
 
-.doc-upload-zone:hover {
-  background: var(--bg-subtle);
-}
+.doc-upload-zone:hover { background: var(--bg-subtle); }
+.doc-upload-zone span { font-size: 0.78rem; color: var(--text-secondary); }
+.doc-upload-zone strong { color: var(--accent-primary); }
+.doc-upload-hint { font-size: 0.68rem !important; color: var(--text-muted) !important; }
 
-.doc-upload-zone span {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.doc-upload-zone strong {
-  color: var(--accent-indigo);
-}
-
-.doc-upload-hint {
-  font-size: 0.7rem !important;
-  color: var(--text-muted) !important;
-}
-
-/* ── Dropzone Active State ── */
-.dropzone-active .doc-upload-zone {
-  background: rgba(79, 70, 229, 0.06);
-}
-
-.dropzone-active .doc-upload-zone i {
-  color: var(--accent-indigo) !important;
-}
-
-/* ── Toast Container ── */
-.toast-container {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.toast {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.85rem 1.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-active);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(100%); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* ── Accent Color Variable Alias ── */
-.tag-amber { background: #fef3c7; color: #b45309; }
+.dropzone-active .doc-upload-zone { background: var(--accent-primary-soft); }
+.dropzone-active .doc-upload-zone i { color: var(--accent-primary) !important; }

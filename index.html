@@ -6,10 +6,20 @@
   <title>UniPath — Australia & New Zealand University, Language School Admissions Portal</title>
   <meta name="description" content="Browse universities and language schools in Australia & New Zealand. Check requirements, upload documents, and prepare your application package." />
 
+  <!-- Prevent theme flash -->
+  <script>
+    (function() {
+      const t = localStorage.getItem('unipath_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+      const c = localStorage.getItem('unipath_color_theme');
+      if (c) document.documentElement.setAttribute('data-color-theme', c);
+    })();
+  </script>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -36,8 +46,13 @@
           </div>
         </a>
 
+        <!-- Hamburger for mobile -->
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation">
+          <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+        </button>
+
         <!-- Navigation Tabs -->
-        <nav class="nav-tabs">
+        <nav class="nav-tabs" id="nav-tabs">
           <button class="nav-tab active" data-tab="explorer">
             <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Institutions
           </button>
@@ -59,10 +74,18 @@
           <button class="nav-tab" data-tab="essays">
             <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> GS Statement
           </button>
+          <button class="nav-tab" data-tab="favorites">
+            <i data-lucide="heart" style="width: 15px; height: 15px;"></i> Saved
+          </button>
         </nav>
       </div>
 
       <div class="navbar-right">
+        <!-- Search shortcut hint -->
+        <button class="theme-toggle" onclick="App.openCommandPalette()" aria-label="Search" title="Search (Ctrl+K)" style="margin-right: 0.25rem;">
+          <i data-lucide="search" style="width: 18px; height: 18px; position: static; opacity: 1; transform: none;"></i>
+        </button>
+
         <!-- Notification Bell -->
         <div style="position: relative;">
           <button class="notif-bell" id="notif-bell" aria-label="Notifications">
@@ -71,15 +94,93 @@
           </button>
           <div class="notif-dropdown" id="notif-dropdown">
             <div class="notif-dropdown-header">
-              <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--accent-amber);"></i>
+              <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--accent-warning);"></i>
               Upcoming Deadlines
             </div>
             <div id="notif-list"></div>
           </div>
         </div>
 
+        <!-- Color Theme Palette Picker -->
+        <div style="position: relative;">
+          <button class="theme-toggle" id="theme-palette-btn" aria-label="Choose color theme" title="Color Themes (Choose Theme)">
+            <i data-lucide="palette" style="width: 18px; height: 18px; position: static; opacity: 1; transform: none;"></i>
+          </button>
+          <div class="theme-palette-dropdown" id="theme-palette-dropdown">
+            <div class="theme-palette-header">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="palette" style="width: 15px; height: 15px; color: var(--accent-primary);"></i>
+                <span>Theme Palette</span>
+              </div>
+              <button onclick="App.openThemeModal()" style="background: none; border: none; font-size: 0.72rem; color: var(--accent-primary); cursor: pointer; font-weight: 700; text-decoration: underline;">Full Grid</button>
+            </div>
+            <div class="theme-palette-list" id="theme-palette-list">
+              <button class="theme-option-btn" data-theme-id="oceanic" onclick="App.setColorTheme('oceanic')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #4f46e5; --swatch-secondary: #0ea5e9;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Oceanic Clarity</span>
+                    <span class="theme-option-desc">Indigo & Sky Cyan (Default)</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+              <button class="theme-option-btn" data-theme-id="emerald" onclick="App.setColorTheme('emerald')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #059669; --swatch-secondary: #0d9488;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Emerald Horizon</span>
+                    <span class="theme-option-desc">Rainforest Jade & Mint</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+              <button class="theme-option-btn" data-theme-id="sunset" onclick="App.setColorTheme('sunset')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #e11d48; --swatch-secondary: #ea580c;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Sunset Coral</span>
+                    <span class="theme-option-desc">Outback Coral & Amber</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+              <button class="theme-option-btn" data-theme-id="amethyst" onclick="App.setColorTheme('amethyst')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #7c3aed; --swatch-secondary: #c026d3;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Royal Amethyst</span>
+                    <span class="theme-option-desc">Academic Violet & Orchid</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+              <button class="theme-option-btn" data-theme-id="cyber" onclick="App.setColorTheme('cyber')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #2563eb; --swatch-secondary: #06b6d4;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Nordic Slate</span>
+                    <span class="theme-option-desc">Cobalt & Arctic Cyan</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+              <button class="theme-option-btn" data-theme-id="amber" onclick="App.setColorTheme('amber')">
+                <div class="theme-option-main">
+                  <div class="theme-swatch-circle" style="--swatch-primary: #d97706; --swatch-secondary: #059669;"></div>
+                  <div class="theme-option-texts">
+                    <span class="theme-option-name">Golden Wattle</span>
+                    <span class="theme-option-desc">Honey Gold & Sage</span>
+                  </div>
+                </div>
+                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Dark Mode Toggle -->
-        <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode">
+        <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode" title="Toggle Light/Dark Mode">
           <i data-lucide="sun" class="icon-sun" style="width: 18px; height: 18px;"></i>
           <i data-lucide="moon" class="icon-moon" style="width: 18px; height: 18px;"></i>
         </button>
@@ -94,15 +195,15 @@
         <div class="hero-card">
           <div class="hero-content">
             <div class="hero-badge">
-              <i data-lucide="globe-2" style="width: 14px; height: 14px;"></i> Australia & New Zealand Admissions Portal
+              <i data-lucide="globe-2" style="width: 14px; height: 14px;"></i> Australia & New Zealand Admissions
             </div>
             <h1 class="hero-title">Your Path to <span>Oceanic Education</span></h1>
-            <p class="hero-desc">Browse universities and language schools across Australia & New Zealand. Check entry requirements, then upload your documents directly — we'll handle the applications for you.</p>
-            <div style="display: flex; gap: 0.85rem; flex-wrap: wrap;">
+            <p class="hero-desc">Browse universities and language schools across Australia & New Zealand. Check entry requirements, upload your documents — we handle the rest.</p>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
               <button class="btn btn-primary" onclick="App.switchTab('applications')">
                 <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i> My Applications
               </button>
-              <button class="btn btn-secondary" onclick="App.switchTab('matcher')">
+              <button class="btn btn-secondary" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9);" onclick="App.switchTab('matcher')">
                 <i data-lucide="target" style="width: 16px; height: 16px;"></i> Check Eligibility
               </button>
             </div>
@@ -110,50 +211,16 @@
 
           <div class="hero-stats">
             <div class="hero-stat-card">
-              <div class="stat-value count-up">8 + 5</div>
-              <div class="stat-label">AU & NZ Universities</div>
+              <div class="stat-value count-up">13</div>
+              <div class="stat-label">Universities</div>
             </div>
             <div class="hero-stat-card">
               <div class="stat-value count-up">5</div>
               <div class="stat-label">Language Schools</div>
             </div>
             <div class="hero-stat-card">
-              <div class="stat-value">2 Countries</div>
-              <div class="stat-label">🇦🇺 Australia & 🇳🇿 New Zealand</div>
-            </div>
-            <div class="hero-stat-card">
               <div class="stat-value" id="stat-total-apps">0</div>
-              <div class="stat-label">Applications Started</div>
-            </div>
-          </div>
-
-          <!-- Interactive Map -->
-          <div class="hero-map-section">
-            <div class="hero-map-title">
-              <i data-lucide="map" style="width: 14px; height: 14px;"></i> INSTITUTION LOCATIONS — Click a city to filter
-            </div>
-            <div class="map-container" id="map-container">
-              <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- Simplified Australia outline -->
-                <path d="M80,200 Q100,150 160,130 Q200,120 250,125 Q300,130 350,140 Q400,130 440,145 Q480,160 500,180 Q520,200 530,230 Q535,260 525,290 Q515,320 490,345 Q460,370 430,380 Q400,390 370,385 Q340,380 310,370 Q280,365 250,370 Q220,375 190,380 Q160,375 140,360 Q120,345 105,320 Q90,295 85,270 Q78,240 80,200 Z" />
-                <!-- Tasmania -->
-                <path d="M410,400 Q420,395 430,400 Q440,410 435,420 Q425,430 415,425 Q405,415 410,400 Z" />
-                <!-- New Zealand North Island -->
-                <path d="M530,280 Q540,260 555,255 Q565,260 570,275 Q575,290 568,305 Q560,315 548,318 Q535,315 530,300 Q528,290 530,280 Z" />
-                <!-- New Zealand South Island -->
-                <path d="M540,325 Q550,320 560,325 Q568,335 565,350 Q558,365 545,370 Q535,365 530,350 Q532,335 540,325 Z" />
-              </svg>
-              <!-- City dots — positioned via percentages -->
-              <div class="map-city-dot" style="left: 78%; top: 42%;" data-city="Sydney" onclick="UniExplorer.filterByCity('Sydney')"></div>
-              <div class="map-city-dot" style="left: 72%; top: 56%;" data-city="Melbourne" onclick="UniExplorer.filterByCity('Melbourne')"></div>
-              <div class="map-city-dot" style="left: 80%; top: 28%;" data-city="Brisbane" onclick="UniExplorer.filterByCity('Brisbane')"></div>
-              <div class="map-city-dot" style="left: 28%; top: 52%;" data-city="Perth" onclick="UniExplorer.filterByCity('Perth')"></div>
-              <div class="map-city-dot" style="left: 60%; top: 56%;" data-city="Adelaide" onclick="UniExplorer.filterByCity('Adelaide')"></div>
-              <div class="map-city-dot" style="left: 72%; top: 44%;" data-city="Canberra" onclick="UniExplorer.filterByCity('Canberra')"></div>
-              <div class="map-city-dot nz" style="left: 92%; top: 55%;" data-city="Auckland" onclick="UniExplorer.filterByCity('Auckland')"></div>
-              <div class="map-city-dot nz" style="left: 91%; top: 63%;" data-city="Wellington" onclick="UniExplorer.filterByCity('Wellington')"></div>
-              <div class="map-city-dot nz" style="left: 90%; top: 70%;" data-city="Christchurch" onclick="UniExplorer.filterByCity('Christchurch')"></div>
-              <div class="map-city-dot nz" style="left: 88%; top: 76%;" data-city="Dunedin" onclick="UniExplorer.filterByCity('Dunedin')"></div>
+              <div class="stat-label">Applications</div>
             </div>
           </div>
         </div>
@@ -196,8 +263,8 @@
 
           <div class="input-group" style="justify-content: center;">
             <label class="input-label" style="margin-bottom: 0.25rem;">Elite Filter</label>
-            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--accent-indigo); cursor: pointer;">
-              <input type="checkbox" id="filter-elite" style="accent-color: var(--accent-indigo); width: 15px; height: 15px; cursor: pointer;" />
+            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--accent-primary); cursor: pointer;">
+              <input type="checkbox" id="filter-elite" style="accent-color: var(--accent-primary); width: 15px; height: 15px; cursor: pointer;" />
               Top-Tier Only
             </label>
           </div>
@@ -226,7 +293,7 @@
       <section id="view-applications" class="tab-view">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 class="section-title"><i data-lucide="folder-open" style="color: var(--accent-indigo);"></i> My Applications</h2>
+            <h2 class="section-title"><i data-lucide="folder-open" style="color: var(--accent-primary);"></i> My Applications</h2>
             <p class="section-subtitle">Upload required documents for each institution. When ready, export everything as a ZIP package.</p>
           </div>
           <div style="display: flex; gap: 0.65rem;">
@@ -242,7 +309,7 @@
         <!-- Student Profile Card -->
         <div class="glass-card" style="margin-bottom: 1.5rem;">
           <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="user" style="width: 18px; height: 18px; color: var(--accent-indigo);"></i> Student Profile
+            <i data-lucide="user" style="width: 18px; height: 18px; color: var(--accent-primary);"></i> Student Profile
             <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: auto;">Included in all exports</span>
           </h3>
           <form id="student-profile-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; align-items: end;">
@@ -273,18 +340,18 @@
         </div>
 
         <!-- Stats -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-          <div class="glass-card" style="text-align: center; padding: 1.25rem;">
-            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Applications</div>
-            <div id="stat-total-apps-view" style="font-size: 2rem; font-weight: 800; color: var(--accent-indigo);">0</div>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
+            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Applications</div>
+            <div id="stat-total-apps-view" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-primary); font-family: var(--font-heading); letter-spacing: -0.02em;">0</div>
           </div>
-          <div class="glass-card" style="text-align: center; padding: 1.25rem;">
-            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Ready to Submit</div>
-            <div id="stat-complete-apps" style="font-size: 2rem; font-weight: 800; color: var(--accent-emerald);">0</div>
+          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
+            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Ready to Submit</div>
+            <div id="stat-complete-apps" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-success); font-family: var(--font-heading); letter-spacing: -0.02em;">0</div>
           </div>
-          <div class="glass-card" style="text-align: center; padding: 1.25rem;">
-            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Documents Uploaded</div>
-            <div id="stat-docs-uploaded" style="font-size: 2rem; font-weight: 800; color: var(--accent-amber);">0/0</div>
+          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
+            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Documents</div>
+            <div id="stat-docs-uploaded" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-warning); font-family: var(--font-heading); letter-spacing: -0.02em;">0/0</div>
           </div>
         </div>
 
@@ -304,7 +371,7 @@
       <!-- ═══════════════ VIEW 4: ELIGIBILITY MATCHER ═══════════════ -->
       <section id="view-matcher" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title"><i data-lucide="calculator" style="color: var(--accent-blue);"></i> Eligibility Calculator</h2>
+          <h2 class="section-title"><i data-lucide="calculator" style="color: var(--accent-secondary);"></i> Eligibility Calculator</h2>
           <p class="section-subtitle">Input your academic scores and English results to find matching institutions across Australia & New Zealand.</p>
         </div>
 
@@ -345,7 +412,7 @@
 
           <div id="matcher-results">
             <div class="glass-card" style="text-align: center; padding: 3.5rem 2rem;">
-              <i data-lucide="target" style="width: 44px; height: 44px; color: var(--accent-blue); margin-bottom: 0.85rem;"></i>
+              <i data-lucide="target" style="width: 44px; height: 44px; color: var(--accent-secondary); margin-bottom: 0.85rem;"></i>
               <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem;">Calculate Your Match</h3>
               <p style="color: var(--text-secondary); max-width: 420px; margin: 0 auto; font-size: 0.9rem;">Enter your academic parameters and click 'Calculate Compatibility'.</p>
             </div>
@@ -356,7 +423,7 @@
       <!-- ═══════════════ VIEW 5: SCHOLARSHIPS ═══════════════ -->
       <section id="view-scholarships" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title"><i data-lucide="award" style="color: var(--accent-amber);"></i> Scholarships — Australia & New Zealand</h2>
+          <h2 class="section-title"><i data-lucide="award" style="color: var(--accent-warning);"></i> Scholarships — Australia & New Zealand</h2>
           <p class="section-subtitle">Government awards, university merit scholarships, and financial aid across both countries.</p>
         </div>
 
@@ -378,7 +445,7 @@
       <!-- ═══════════════ VIEW 6: VISA & TOOLS ═══════════════ -->
       <section id="view-tools" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title"><i data-lucide="wrench" style="color: var(--accent-indigo);"></i> Visa, Financial & Grade Tools</h2>
+          <h2 class="section-title"><i data-lucide="wrench" style="color: var(--accent-primary);"></i> Visa, Financial & Grade Tools</h2>
           <p class="section-subtitle">IB/GPA to ATAR conversion, Subclass 500 financial proof calculator, post-study work visa rights, and city cost of living comparison.</p>
         </div>
 
@@ -386,7 +453,7 @@
 
           <!-- Tool 1: ATAR Grade Converter -->
           <div class="glass-card scroll-reveal">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-indigo);">
+            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-primary);">
               <i data-lucide="arrow-right-left" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">ATAR Grade Converter</h3>
             </div>
@@ -395,7 +462,7 @@
               <label class="input-label" for="calc-ib">IB Diploma Score (out of 45)</label>
               <input type="number" min="24" max="45" id="calc-ib" class="form-control" value="38" />
               <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-ib-atar" style="color: var(--accent-indigo); font-size: 0.95rem;">95.80</strong>
+                Estimated ATAR: <strong id="out-ib-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.80</strong>
               </div>
             </div>
 
@@ -403,7 +470,7 @@
               <label class="input-label" for="calc-gpa">US High School GPA (out of 4.0)</label>
               <input type="number" step="0.05" min="2.5" max="4.0" id="calc-gpa" class="form-control" value="3.80" />
               <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-gpa-atar" style="color: var(--accent-indigo); font-size: 0.95rem;">95.00</strong>
+                Estimated ATAR: <strong id="out-gpa-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.00</strong>
               </div>
             </div>
 
@@ -411,14 +478,14 @@
               <label class="input-label" for="calc-cbse">CBSE / Indian Board (%)</label>
               <input type="number" min="60" max="100" id="calc-cbse" class="form-control" value="92" />
               <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-cbse-atar" style="color: var(--accent-indigo); font-size: 0.95rem;">93.00</strong>
+                Estimated ATAR: <strong id="out-cbse-atar" style="color: var(--accent-primary); font-size: 0.95rem;">93.00</strong>
               </div>
             </div>
           </div>
 
           <!-- Tool 2: Financial Calculator -->
           <div class="glass-card scroll-reveal scroll-reveal-delay-1">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-amber);">
+            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-warning);">
               <i data-lucide="coins" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">DHA Financial Proof (Subclass 500)</h3>
             </div>
@@ -430,7 +497,7 @@
 
             <div style="display: flex; gap: 1rem; margin-bottom: 0.65rem;">
               <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;">
-                <input type="checkbox" id="fin-spouse" style="accent-color: var(--accent-amber);" />
+                <input type="checkbox" id="fin-spouse" style="accent-color: var(--accent-warning);" />
                 Include Spouse (+AUD $10,394)
               </label>
             </div>
@@ -449,16 +516,16 @@
               </select>
             </div>
 
-            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); padding: 0.75rem; border-radius: var(--radius-xs);">
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.75rem; border-radius: var(--radius-xs);">
               <div style="font-size: 0.725rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Required Bank Balance</div>
-              <div id="out-fin-total-aud" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-amber);">AUD $78,360</div>
+              <div id="out-fin-total-aud" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-warning);">AUD $78,360</div>
               <div id="out-fin-total-usd" style="font-size: 0.8rem; color: var(--text-secondary);">~ USD $50,934</div>
             </div>
           </div>
 
           <!-- Tool 3: Post-Study Work Visa -->
           <div class="glass-card scroll-reveal scroll-reveal-delay-2">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-emerald);">
+            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-success);">
               <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
               <h3 style="font-size: 1.05rem; font-weight: 800;">Subclass 485 Work Rights</h3>
             </div>
@@ -481,16 +548,16 @@
               </select>
             </div>
 
-            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); padding: 0.75rem; border-radius: var(--radius-xs);">
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 0.75rem; border-radius: var(--radius-xs);">
               <div style="font-size: 0.725rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Post-Study Work Visa</div>
-              <div id="out-pswv-years" style="font-size: 1.25rem; font-weight: 800; color: var(--accent-emerald);">2 Years Full Work Rights</div>
+              <div id="out-pswv-years" style="font-size: 1.25rem; font-weight: 800; color: var(--accent-success);">2 Years Full Work Rights</div>
               <div id="out-pswv-desc" style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 0.2rem; line-height: 1.35;">Full-time post-study work eligibility across Australia.</div>
             </div>
           </div>
         </div>
 
         <div class="glass-card scroll-reveal" style="padding: 1.25rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem;">
-          <i data-lucide="clock" style="width: 30px; height: 30px; color: var(--accent-indigo); flex-shrink: 0;"></i>
+          <i data-lucide="clock" style="width: 30px; height: 30px; color: var(--accent-primary); flex-shrink: 0;"></i>
           <div>
             <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem;">Subclass 500 Work Hours</h4>
             <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.45;">
@@ -502,7 +569,7 @@
         <!-- Cost of Living Comparison Section -->
         <div class="section-header scroll-reveal">
           <h2 class="section-title" style="font-size: 1.35rem;">
-            <i data-lucide="bar-chart-3" style="color: var(--accent-cyan);"></i> Cost of Living Comparison
+            <i data-lucide="bar-chart-3" style="color: var(--accent-secondary);"></i> Cost of Living Comparison
           </h2>
           <p class="section-subtitle">Monthly living costs comparison across major AU & NZ student cities (shared accommodation, student budget).</p>
         </div>
@@ -512,7 +579,7 @@
       <!-- ═══════════════ VIEW 7: GS STATEMENT ═══════════════ -->
       <section id="view-essays" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title"><i data-lucide="file-text" style="color: var(--accent-emerald);"></i> Genuine Student (GS) Statement Workspace</h2>
+          <h2 class="section-title"><i data-lucide="file-text" style="color: var(--accent-success);"></i> Genuine Student (GS) Statement Workspace</h2>
           <p class="section-subtitle">Draft your GS statement for Subclass 500 Visa and academic statements.</p>
         </div>
 
@@ -554,16 +621,25 @@
           <div class="glass-card">
             <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 0.85rem;">GS Criteria Checklist</h3>
             <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem; color: var(--text-secondary);">
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Why you chose Australia/NZ over home country.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> How the program aligns with career goals.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Address any study gaps clearly.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Financial ties to home country.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Immigration history (if applicable).</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Your plan to return home after studies.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-indigo);"></i> Why this specific institution over others.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why you chose Australia/NZ over home country.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> How the program aligns with career goals.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Address any study gaps clearly.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Financial ties to home country.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Immigration history (if applicable).</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Your plan to return home after studies.</li>
+              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why this specific institution over others.</li>
             </ul>
           </div>
         </div>
+      </section>
+
+      <!-- ═══════════════ VIEW 8: FAVORITES ═══════════════ -->
+      <section id="view-favorites" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title"><i data-lucide="heart" style="color: var(--accent-danger);"></i> Saved Institutions</h2>
+          <p class="section-subtitle">Your bookmarked universities and language schools. Click the heart on any institution card to save it here.</p>
+        </div>
+        <div id="favorites-container"></div>
       </section>
 
     </main>
@@ -603,7 +679,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2025 UniPath Portal — Oceanic Education Admissions</span>
+        <span>© 2026 UniPath Portal — Oceanic Education Admissions</span>
         <div class="footer-bottom-links">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>
@@ -634,7 +710,7 @@
       <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
       <span class="fab-label">Match</span>
     </button>
-    <button class="fab-btn" onclick="App.toggleTheme()">
+    <button class="fab-btn" id="fab-theme-btn" onclick="App.openThemeModal()">
       <i data-lucide="palette" style="width: 16px; height: 16px;"></i>
       <span class="fab-label">Theme</span>
     </button>
@@ -649,6 +725,40 @@
   <div id="uni-modal-overlay" class="modal-overlay">
     <div class="modal-card">
       <div id="uni-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Command Palette -->
+  <div class="command-palette-overlay" id="command-palette-overlay">
+    <div class="command-palette">
+      <input class="command-palette-input" id="command-palette-input" type="text" placeholder="Search institutions, tabs, or actions..." autocomplete="off" />
+      <div class="command-palette-results" id="command-palette-results"></div>
+      <div class="command-palette-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>↵</kbd> Select</span>
+        <span><kbd>Esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Panel -->
+  <div class="shortcuts-panel" id="shortcuts-panel">
+    <div class="shortcuts-card">
+      <h3><i data-lucide="keyboard" style="width: 20px; height: 20px; color: var(--accent-primary);"></i> Keyboard Shortcuts</h3>
+      <div class="shortcut-row"><span>Search / Command Palette</span> <kbd>Ctrl+K</kbd></div>
+      <div class="shortcut-row"><span>Institutions</span> <kbd>1</kbd></div>
+      <div class="shortcut-row"><span>Applications</span> <kbd>2</kbd></div>
+      <div class="shortcut-row"><span>Timeline</span> <kbd>3</kbd></div>
+      <div class="shortcut-row"><span>Eligibility</span> <kbd>4</kbd></div>
+      <div class="shortcut-row"><span>Scholarships</span> <kbd>5</kbd></div>
+      <div class="shortcut-row"><span>Tools</span> <kbd>6</kbd></div>
+      <div class="shortcut-row"><span>GS Statement</span> <kbd>7</kbd></div>
+      <div class="shortcut-row"><span>Saved</span> <kbd>8</kbd></div>
+      <div class="shortcut-row"><span>Toggle Dark Mode</span> <kbd>D</kbd></div>
+      <div class="shortcut-row"><span>This Help Panel</span> <kbd>?</kbd></div>
+      <div style="margin-top: 1rem; text-align: center;">
+        <button class="btn btn-secondary btn-sm" onclick="App.closeShortcutsPanel()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -669,6 +779,7 @@
   <script src="js/comparison.js"></script>
   <script src="js/costliving.js"></script>
   <script src="js/timeline.js"></script>
+  <script src="js/favorites.js"></script>
   <script src="js/app.js"></script>
 
 </body>
