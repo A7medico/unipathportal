@@ -1,6 +1,6 @@
 /* ==========================================================================
-   UNIPATH — KANBAN BOARD & TRACKER STYLES
-   Updated to warm editorial palette
+   UNIPATH — AURA KANBAN BOARD & TRACKER
+   Glass surfaces · Premium depth
    ========================================================================== */
 
 .kanban-board {
@@ -13,13 +13,15 @@
 }
 
 .kanban-column {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   padding: 1.15rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+  box-shadow: var(--glass-inner);
 }
 
 .column-header {
@@ -27,7 +29,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 0.7rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .column-title {
@@ -40,13 +42,13 @@
 }
 
 .column-count {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--text-secondary);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.12rem 0.45rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--glass-border);
 }
 
 .kanban-cards-container {
@@ -58,91 +60,60 @@
 }
 
 .kanban-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-solid);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   padding: 0.95rem;
   cursor: grab;
-  transition: border-color var(--transition-normal);
+  transition: all var(--transition-normal);
   position: relative;
 }
 
 .kanban-item:active { cursor: grabbing; }
-.kanban-item:hover { border-color: var(--accent-primary); }
+.kanban-item:hover { border-color: var(--accent-primary-border); box-shadow: 0 4px 16px var(--accent-primary-glow); }
 
-.kanban-item-title {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  margin-bottom: 0.2rem;
-}
-
-.kanban-item-subtitle {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.7rem;
-}
+.kanban-item-title { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.2rem; }
+.kanban-item-subtitle { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.7rem; }
 
 .kanban-progress-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--bg-subtle);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  margin-bottom: 0.7rem;
+  width: 100%; height: 4px;
+  background: var(--bg-subtle); border-radius: var(--radius-sm);
+  overflow: hidden; margin-bottom: 0.7rem;
 }
 
 .kanban-progress-fill {
   height: 100%;
-  background: var(--accent-primary);
+  background: var(--brand-gradient);
   border-radius: var(--radius-sm);
   transition: width 0.3s ease;
 }
 
 .kanban-checklist {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-top: 0.7rem;
-  padding-top: 0.7rem;
-  border-top: 1px dashed var(--border-subtle);
+  display: flex; flex-direction: column; gap: 0.35rem;
+  margin-top: 0.7rem; padding-top: 0.7rem;
+  border-top: 1px dashed var(--glass-border);
 }
 
 .checklist-item {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  user-select: none;
+  display: flex; align-items: center; gap: 0.45rem;
+  font-size: 0.78rem; color: var(--text-secondary);
+  cursor: pointer; user-select: none;
 }
 
-.checklist-item.done {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-
-.checklist-item input[type="checkbox"] {
-  accent-color: var(--accent-primary);
-  cursor: pointer;
-}
+.checklist-item.done { text-decoration: line-through; color: var(--text-muted); }
+.checklist-item input[type="checkbox"] { accent-color: var(--accent-primary); cursor: pointer; }
 
 .deadline-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.12rem 0.45rem;
-  border-radius: var(--radius-xs);
-  background: rgba(184, 134, 11, 0.08);
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  font-size: 0.72rem; font-weight: 600;
+  padding: 0.12rem 0.45rem; border-radius: var(--radius-xs);
+  background: rgba(251, 191, 36, 0.08);
   color: var(--accent-gold);
-  border: 1px solid rgba(184, 134, 11, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.15);
 }
 
 .deadline-urgent {
-  background: rgba(196, 85, 61, 0.08);
-  color: var(--accent-warm);
-  border-color: rgba(196, 85, 61, 0.15);
+  background: rgba(248, 113, 113, 0.08);
+  color: var(--accent-danger);
+  border-color: rgba(248, 113, 113, 0.15);
 }

@@ -11,6 +11,7 @@
     (function() {
       const t = localStorage.getItem('unipath_theme');
       if (t) document.documentElement.setAttribute('data-theme', t);
+      else document.documentElement.setAttribute('data-theme', 'dark');
       const c = localStorage.getItem('unipath_color_theme');
       if (c) document.documentElement.setAttribute('data-color-theme', c);
     })();
@@ -19,7 +20,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -28,698 +29,729 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/applications.css" />
+  <link rel="stylesheet" href="css/kanban.css" />
   <link rel="stylesheet" href="css/responsive.css" />
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Header Navbar -->
-    <header class="navbar">
-      <div class="navbar-left">
-        <a href="#" class="brand">
-          <div class="brand-icon">
-            <i data-lucide="graduation-cap" style="width: 22px; height: 22px;"></i>
+  <div class="app-layout">
+
+    <!-- ═══════════════ SIDEBAR NAVIGATION ═══════════════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand">
+          <div class="sidebar-brand-icon">
+            <i data-lucide="graduation-cap" style="width: 20px; height: 20px;"></i>
           </div>
-          <div class="brand-text">
-            Uni<span>Path</span>
-            <span class="aus-flag-badge">🌏 AU & NZ</span>
-          </div>
+          <span class="sidebar-brand-text">Uni<span>Path</span></span>
         </a>
-
-        <!-- Hamburger for mobile -->
-        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation">
-          <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
-        </button>
-
-        <!-- Navigation Tabs -->
-        <nav class="nav-tabs" id="nav-tabs">
-          <button class="nav-tab active" data-tab="explorer">
-            <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Institutions
-          </button>
-          <button class="nav-tab" data-tab="applications">
-            <i data-lucide="folder-open" style="width: 15px; height: 15px;"></i> Applications
-          </button>
-          <button class="nav-tab" data-tab="timeline">
-            <i data-lucide="git-branch" style="width: 15px; height: 15px;"></i> Timeline
-          </button>
-          <button class="nav-tab" data-tab="matcher">
-            <i data-lucide="calculator" style="width: 15px; height: 15px;"></i> Eligibility
-          </button>
-          <button class="nav-tab" data-tab="scholarships">
-            <i data-lucide="award" style="width: 15px; height: 15px;"></i> Scholarships
-          </button>
-          <button class="nav-tab" data-tab="tools">
-            <i data-lucide="wrench" style="width: 15px; height: 15px;"></i> Tools
-          </button>
-          <button class="nav-tab" data-tab="essays">
-            <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> GS Statement
-          </button>
-          <button class="nav-tab" data-tab="favorites">
-            <i data-lucide="heart" style="width: 15px; height: 15px;"></i> Saved
-          </button>
-        </nav>
-      </div>
-
-      <div class="navbar-right">
-        <!-- Search shortcut hint -->
-        <button class="theme-toggle" onclick="App.openCommandPalette()" aria-label="Search" title="Search (Ctrl+K)" style="margin-right: 0.25rem;">
-          <i data-lucide="search" style="width: 18px; height: 18px; position: static; opacity: 1; transform: none;"></i>
-        </button>
-
-        <!-- Notification Bell -->
-        <div style="position: relative;">
-          <button class="notif-bell" id="notif-bell" aria-label="Notifications">
-            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
-            <span class="notif-badge" id="notif-badge">0</span>
-          </button>
-          <div class="notif-dropdown" id="notif-dropdown">
-            <div class="notif-dropdown-header">
-              <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--accent-warning);"></i>
-              Upcoming Deadlines
-            </div>
-            <div id="notif-list"></div>
-          </div>
-        </div>
-
-        <!-- Color Theme Palette Picker -->
-        <div style="position: relative;">
-          <button class="theme-toggle" id="theme-palette-btn" aria-label="Choose color theme" title="Color Themes (Choose Theme)">
-            <i data-lucide="palette" style="width: 18px; height: 18px; position: static; opacity: 1; transform: none;"></i>
-          </button>
-          <div class="theme-palette-dropdown" id="theme-palette-dropdown">
-            <div class="theme-palette-header">
-              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <i data-lucide="palette" style="width: 15px; height: 15px; color: var(--accent-primary);"></i>
-                <span>Theme Palette</span>
-              </div>
-              <button onclick="App.openThemeModal()" style="background: none; border: none; font-size: 0.72rem; color: var(--accent-primary); cursor: pointer; font-weight: 700; text-decoration: underline;">Full Grid</button>
-            </div>
-            <div class="theme-palette-list" id="theme-palette-list">
-              <button class="theme-option-btn" data-theme-id="oceanic" onclick="App.setColorTheme('oceanic')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #4f46e5; --swatch-secondary: #0ea5e9;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Oceanic Clarity</span>
-                    <span class="theme-option-desc">Indigo & Sky Cyan (Default)</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-              <button class="theme-option-btn" data-theme-id="emerald" onclick="App.setColorTheme('emerald')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #059669; --swatch-secondary: #0d9488;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Emerald Horizon</span>
-                    <span class="theme-option-desc">Rainforest Jade & Mint</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-              <button class="theme-option-btn" data-theme-id="sunset" onclick="App.setColorTheme('sunset')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #e11d48; --swatch-secondary: #ea580c;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Sunset Coral</span>
-                    <span class="theme-option-desc">Outback Coral & Amber</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-              <button class="theme-option-btn" data-theme-id="amethyst" onclick="App.setColorTheme('amethyst')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #7c3aed; --swatch-secondary: #c026d3;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Royal Amethyst</span>
-                    <span class="theme-option-desc">Academic Violet & Orchid</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-              <button class="theme-option-btn" data-theme-id="cyber" onclick="App.setColorTheme('cyber')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #2563eb; --swatch-secondary: #06b6d4;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Nordic Slate</span>
-                    <span class="theme-option-desc">Cobalt & Arctic Cyan</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-              <button class="theme-option-btn" data-theme-id="amber" onclick="App.setColorTheme('amber')">
-                <div class="theme-option-main">
-                  <div class="theme-swatch-circle" style="--swatch-primary: #d97706; --swatch-secondary: #059669;"></div>
-                  <div class="theme-option-texts">
-                    <span class="theme-option-name">Golden Wattle</span>
-                    <span class="theme-option-desc">Honey Gold & Sage</span>
-                  </div>
-                </div>
-                <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dark Mode Toggle -->
-        <button class="theme-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode" title="Toggle Light/Dark Mode">
-          <i data-lucide="sun" class="icon-sun" style="width: 18px; height: 18px;"></i>
-          <i data-lucide="moon" class="icon-moon" style="width: 18px; height: 18px;"></i>
+        <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse sidebar">
+          <i data-lucide="panel-left-close" style="width: 18px; height: 18px;"></i>
         </button>
       </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <div class="sidebar-nav-group">
+          <span class="sidebar-nav-label">Navigate</span>
+          <button class="sidebar-nav-item active" data-tab="explorer">
+            <div class="sidebar-nav-icon"><i data-lucide="compass" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Institutions</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="applications">
+            <div class="sidebar-nav-icon"><i data-lucide="folder-open" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Applications</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="timeline">
+            <div class="sidebar-nav-icon"><i data-lucide="git-branch" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Timeline</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="matcher">
+            <div class="sidebar-nav-icon"><i data-lucide="calculator" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Eligibility</span>
+          </button>
+        </div>
 
-      <!-- ═══════════════ VIEW 1: INSTITUTION EXPLORER ═══════════════ -->
-      <section id="view-explorer" class="tab-view active">
-        <div class="hero-card">
-          <div class="hero-content">
-            <div class="hero-badge">
-              <i data-lucide="globe-2" style="width: 14px; height: 14px;"></i> Australia & New Zealand Admissions
+        <div class="sidebar-nav-group">
+          <span class="sidebar-nav-label">Resources</span>
+          <button class="sidebar-nav-item" data-tab="scholarships">
+            <div class="sidebar-nav-icon"><i data-lucide="award" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Scholarships</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="tools">
+            <div class="sidebar-nav-icon"><i data-lucide="wrench" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Tools</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="essays">
+            <div class="sidebar-nav-icon"><i data-lucide="file-text" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">GS Statement</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="favorites">
+            <div class="sidebar-nav-icon"><i data-lucide="heart" style="width: 18px; height: 18px;"></i></div>
+            <span class="sidebar-nav-text">Saved</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-nav-item sidebar-theme-btn" onclick="App.toggleTheme()">
+          <div class="sidebar-nav-icon">
+            <i data-lucide="sun" class="icon-sun" style="width: 18px; height: 18px;"></i>
+            <i data-lucide="moon" class="icon-moon" style="width: 18px; height: 18px;"></i>
+          </div>
+          <span class="sidebar-nav-text">Toggle Theme</span>
+        </button>
+        <a href="candidate-console/index.html" class="sidebar-nav-item" style="text-decoration: none;">
+          <div class="sidebar-nav-icon"><i data-lucide="terminal" style="width: 18px; height: 18px;"></i></div>
+          <span class="sidebar-nav-text">Console</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ═══════════════ MAIN WRAPPER ═══════════════ -->
+    <div class="main-wrapper">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" id="topbar-menu-btn" aria-label="Open menu">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="topbar-breadcrumb" id="topbar-breadcrumb">
+            <span class="topbar-breadcrumb-icon"><i data-lucide="compass" style="width: 16px; height: 16px;"></i></span>
+            <span class="topbar-breadcrumb-text">Institutions</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Search -->
+          <button class="topbar-action-btn" onclick="App.openCommandPalette()" aria-label="Search" title="Search (Ctrl+K)">
+            <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+            <span class="topbar-search-hint">
+              <kbd>⌘K</kbd>
+            </span>
+          </button>
+
+          <!-- Notifications -->
+          <div style="position: relative;">
+            <button class="topbar-action-btn notif-bell" id="notif-bell" aria-label="Notifications">
+              <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+              <span class="notif-badge" id="notif-badge">0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--accent-warning);"></i>
+                Upcoming Deadlines
+              </div>
+              <div id="notif-list"></div>
             </div>
-            <h1 class="hero-title">Your Path to <span>Oceanic Education</span></h1>
-            <p class="hero-desc">Browse universities and language schools across Australia & New Zealand. Check entry requirements, upload your documents — we handle the rest.</p>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button class="btn btn-primary" onclick="App.switchTab('applications')">
-                <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i> My Applications
+          </div>
+
+          <!-- Color Theme -->
+          <div style="position: relative;">
+            <button class="topbar-action-btn" id="theme-palette-btn" aria-label="Choose color theme" title="Color Themes">
+              <i data-lucide="palette" style="width: 18px; height: 18px;"></i>
+            </button>
+            <div class="theme-palette-dropdown" id="theme-palette-dropdown">
+              <div class="theme-palette-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i data-lucide="palette" style="width: 15px; height: 15px; color: var(--accent-primary);"></i>
+                  <span>Theme Palette</span>
+                </div>
+                <button onclick="App.openThemeModal()" style="background: none; border: none; font-size: 0.72rem; color: var(--accent-primary); cursor: pointer; font-weight: 700; text-decoration: underline;">Full Grid</button>
+              </div>
+              <div class="theme-palette-list" id="theme-palette-list">
+                <button class="theme-option-btn" data-theme-id="oceanic" onclick="App.setColorTheme('oceanic')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #4f46e5; --swatch-secondary: #0ea5e9;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Oceanic Clarity</span>
+                      <span class="theme-option-desc">Indigo & Sky Cyan (Default)</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="theme-option-btn" data-theme-id="emerald" onclick="App.setColorTheme('emerald')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #059669; --swatch-secondary: #0d9488;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Emerald Horizon</span>
+                      <span class="theme-option-desc">Rainforest Jade & Mint</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="theme-option-btn" data-theme-id="sunset" onclick="App.setColorTheme('sunset')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #e11d48; --swatch-secondary: #ea580c;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Sunset Coral</span>
+                      <span class="theme-option-desc">Outback Coral & Amber</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="theme-option-btn" data-theme-id="amethyst" onclick="App.setColorTheme('amethyst')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #7c3aed; --swatch-secondary: #c026d3;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Royal Amethyst</span>
+                      <span class="theme-option-desc">Academic Violet & Orchid</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="theme-option-btn" data-theme-id="cyber" onclick="App.setColorTheme('cyber')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #2563eb; --swatch-secondary: #06b6d4;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Nordic Slate</span>
+                      <span class="theme-option-desc">Cobalt & Arctic Cyan</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="theme-option-btn" data-theme-id="amber" onclick="App.setColorTheme('amber')">
+                  <div class="theme-option-main">
+                    <div class="theme-swatch-circle" style="--swatch-primary: #d97706; --swatch-secondary: #059669;"></div>
+                    <div class="theme-option-texts">
+                      <span class="theme-option-name">Golden Wattle</span>
+                      <span class="theme-option-desc">Honey Gold & Sage</span>
+                    </div>
+                  </div>
+                  <i data-lucide="check" class="theme-option-check" style="width: 16px; height: 16px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+      <main class="main-content">
+
+        <!-- ═══════════════ VIEW 1: INSTITUTION EXPLORER ═══════════════ -->
+        <section id="view-explorer" class="tab-view active">
+
+          <!-- Bento Hero -->
+          <div class="hero-bento">
+            <div class="hero-bento-bg">
+              <div class="hero-mesh hero-mesh-1"></div>
+              <div class="hero-mesh hero-mesh-2"></div>
+              <div class="hero-mesh hero-mesh-3"></div>
+            </div>
+
+            <div class="hero-bento-main">
+              <div class="hero-badge">
+                <i data-lucide="globe-2" style="width: 14px; height: 14px;"></i> Australia & New Zealand Admissions
+              </div>
+              <h1 class="hero-title">Your Path to <span>Oceanic Education</span></h1>
+              <p class="hero-desc">Browse universities and language schools across Australia & New Zealand. Check entry requirements, upload your documents — we handle the rest.</p>
+              <div class="hero-actions">
+                <button class="btn btn-primary btn-glow" onclick="App.switchTab('applications')">
+                  <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i> My Applications
+                </button>
+                <button class="btn btn-glass" onclick="App.switchTab('matcher')">
+                  <i data-lucide="target" style="width: 16px; height: 16px;"></i> Check Eligibility
+                </button>
+              </div>
+            </div>
+
+            <div class="hero-bento-stats">
+              <div class="bento-stat-card">
+                <div class="bento-stat-value count-up">13</div>
+                <div class="bento-stat-label">Universities</div>
+                <div class="bento-stat-icon"><i data-lucide="building-2" style="width: 20px; height: 20px;"></i></div>
+              </div>
+              <div class="bento-stat-card">
+                <div class="bento-stat-value count-up">5</div>
+                <div class="bento-stat-label">Language Schools</div>
+                <div class="bento-stat-icon"><i data-lucide="book-open" style="width: 20px; height: 20px;"></i></div>
+              </div>
+              <div class="bento-stat-card bento-stat-accent">
+                <div class="bento-stat-value" id="stat-total-apps">0</div>
+                <div class="bento-stat-label">Applications</div>
+                <div class="bento-stat-icon"><i data-lucide="send" style="width: 20px; height: 20px;"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="filter-bar scroll-reveal">
+            <div class="input-group">
+              <label class="input-label" for="explorer-search">Search</label>
+              <div class="search-input-wrap">
+                <i data-lucide="search" class="search-input-icon" style="width: 16px; height: 16px;"></i>
+                <input type="text" id="explorer-search" class="form-control form-control-search" placeholder="University, program, city..." />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="filter-country">Country</label>
+              <select id="filter-country" class="form-control">
+                <option value="all">All Countries</option>
+                <option value="Australia">🇦🇺 Australia</option>
+                <option value="New Zealand">🇳🇿 New Zealand</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="filter-type">Institution Type</label>
+              <select id="filter-type" class="form-control">
+                <option value="all">All Types</option>
+                <option value="university">🏛 Universities</option>
+                <option value="language">📖 Language Schools</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="filter-tuition">Max Tuition</label>
+              <select id="filter-tuition" class="form-control">
+                <option value="all">Any Budget</option>
+                <option value="35000">Under $35,000/yr</option>
+                <option value="40000">Under $40,000/yr</option>
+                <option value="45000">Under $45,000/yr</option>
+                <option value="50000">Under $50,000/yr</option>
+              </select>
+            </div>
+
+            <div class="input-group" style="justify-content: center;">
+              <label class="input-label" style="margin-bottom: 0.25rem;">Elite Filter</label>
+              <label class="elite-toggle-label">
+                <input type="checkbox" id="filter-elite" class="elite-checkbox" />
+                <span class="elite-toggle-text">Top-Tier Only</span>
+              </label>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="filter-sort">Sort By</label>
+              <select id="filter-sort" class="form-control">
+                <option value="rank">World Rank</option>
+                <option value="tuition-low">Tuition: Low → High</option>
+                <option value="tuition-high">Tuition: High → Low</option>
+                <option value="name">Name A-Z</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div id="uni-results-count" style="font-weight: 700; color: var(--text-secondary); font-size: 0.9rem;">
+              Loading institutions...
+            </div>
+          </div>
+
+          <div id="university-grid" class="card-grid"></div>
+        </section>
+
+        <!-- ═══════════════ VIEW 2: MY APPLICATIONS ═══════════════ -->
+        <section id="view-applications" class="tab-view">
+          <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 class="section-title"><i data-lucide="folder-open" style="color: var(--accent-primary);"></i> My Applications</h2>
+              <p class="section-subtitle">Upload required documents for each institution. When ready, export everything as a ZIP package.</p>
+            </div>
+            <div style="display: flex; gap: 0.65rem;">
+              <button class="btn btn-primary btn-sm" onclick="UniDocuments.exportAllApplications()">
+                <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export All (ZIP)
               </button>
-              <button class="btn btn-secondary" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9);" onclick="App.switchTab('matcher')">
-                <i data-lucide="target" style="width: 16px; height: 16px;"></i> Check Eligibility
+              <button class="btn btn-glass btn-sm" onclick="App.switchTab('explorer')">
+                <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add Institution
               </button>
             </div>
           </div>
 
-          <div class="hero-stats">
-            <div class="hero-stat-card">
-              <div class="stat-value count-up">13</div>
-              <div class="stat-label">Universities</div>
-            </div>
-            <div class="hero-stat-card">
-              <div class="stat-value count-up">5</div>
-              <div class="stat-label">Language Schools</div>
-            </div>
-            <div class="hero-stat-card">
-              <div class="stat-value" id="stat-total-apps">0</div>
-              <div class="stat-label">Applications</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Filter Bar -->
-        <div class="filter-bar scroll-reveal">
-          <div class="input-group">
-            <label class="input-label" for="explorer-search">Search</label>
-            <input type="text" id="explorer-search" class="form-control" placeholder="University, program, city..." />
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="filter-country">Country</label>
-            <select id="filter-country" class="form-control">
-              <option value="all">All Countries</option>
-              <option value="Australia">🇦🇺 Australia</option>
-              <option value="New Zealand">🇳🇿 New Zealand</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="filter-type">Institution Type</label>
-            <select id="filter-type" class="form-control">
-              <option value="all">All Types</option>
-              <option value="university">🏛 Universities</option>
-              <option value="language">📖 Language Schools</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="filter-tuition">Max Tuition</label>
-            <select id="filter-tuition" class="form-control">
-              <option value="all">Any Budget</option>
-              <option value="35000">Under $35,000/yr</option>
-              <option value="40000">Under $40,000/yr</option>
-              <option value="45000">Under $45,000/yr</option>
-              <option value="50000">Under $50,000/yr</option>
-            </select>
-          </div>
-
-          <div class="input-group" style="justify-content: center;">
-            <label class="input-label" style="margin-bottom: 0.25rem;">Elite Filter</label>
-            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--accent-primary); cursor: pointer;">
-              <input type="checkbox" id="filter-elite" style="accent-color: var(--accent-primary); width: 15px; height: 15px; cursor: pointer;" />
-              Top-Tier Only
-            </label>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="filter-sort">Sort By</label>
-            <select id="filter-sort" class="form-control">
-              <option value="rank">World Rank</option>
-              <option value="tuition-low">Tuition: Low → High</option>
-              <option value="tuition-high">Tuition: High → Low</option>
-              <option value="name">Name A-Z</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <div id="uni-results-count" style="font-weight: 700; color: var(--text-secondary); font-size: 0.9rem;">
-            Loading institutions...
-          </div>
-        </div>
-
-        <div id="university-grid" class="card-grid"></div>
-      </section>
-
-      <!-- ═══════════════ VIEW 2: MY APPLICATIONS ═══════════════ -->
-      <section id="view-applications" class="tab-view">
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h2 class="section-title"><i data-lucide="folder-open" style="color: var(--accent-primary);"></i> My Applications</h2>
-            <p class="section-subtitle">Upload required documents for each institution. When ready, export everything as a ZIP package.</p>
-          </div>
-          <div style="display: flex; gap: 0.65rem;">
-            <button class="btn btn-primary btn-sm" onclick="UniDocuments.exportAllApplications()">
-              <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export All (ZIP)
-            </button>
-            <button class="btn btn-secondary btn-sm" onclick="App.switchTab('explorer')">
-              <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add Institution
-            </button>
-          </div>
-        </div>
-
-        <!-- Student Profile Card -->
-        <div class="glass-card" style="margin-bottom: 1.5rem;">
-          <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="user" style="width: 18px; height: 18px; color: var(--accent-primary);"></i> Student Profile
-            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: auto;">Included in all exports</span>
-          </h3>
-          <form id="student-profile-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; align-items: end;">
-            <div class="input-group">
-              <label class="input-label" for="student-name">Full Name</label>
-              <input type="text" id="student-name" class="form-control" placeholder="Ahmed Al-Farsi" />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="student-email">Email</label>
-              <input type="email" id="student-email" class="form-control" placeholder="student@email.com" />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="student-phone">Phone</label>
-              <input type="tel" id="student-phone" class="form-control" placeholder="+90 555 123 4567" />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="student-nationality">Nationality</label>
-              <input type="text" id="student-nationality" class="form-control" placeholder="Turkish" />
-            </div>
-            <div class="input-group" style="grid-column: span 2;">
-              <label class="input-label" for="student-notes">Notes</label>
-              <input type="text" id="student-notes" class="form-control" placeholder="Any special circumstances, preferred program, etc." />
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">
-              <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Profile
-            </button>
-          </form>
-        </div>
-
-        <!-- Stats -->
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
-            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Applications</div>
-            <div id="stat-total-apps-view" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-primary); font-family: var(--font-heading); letter-spacing: -0.02em;">0</div>
-          </div>
-          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
-            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Ready to Submit</div>
-            <div id="stat-complete-apps" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-success); font-family: var(--font-heading); letter-spacing: -0.02em;">0</div>
-          </div>
-          <div class="glass-card" style="flex: 1; min-width: 160px; padding: 1.15rem;">
-            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Documents</div>
-            <div id="stat-docs-uploaded" style="font-size: 1.75rem; font-weight: 800; color: var(--accent-warning); font-family: var(--font-heading); letter-spacing: -0.02em;">0/0</div>
-          </div>
-        </div>
-
-        <!-- Application Cards Container -->
-        <div id="applications-container"></div>
-      </section>
-
-      <!-- ═══════════════ VIEW 3: APPLICATION TIMELINE ═══════════════ -->
-      <section id="view-timeline" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="git-branch" style="color: var(--accent-purple);"></i> Application Timeline</h2>
-          <p class="section-subtitle">Track your application progress through key milestones. Click milestone icons to update their status.</p>
-        </div>
-        <div id="timeline-container"></div>
-      </section>
-
-      <!-- ═══════════════ VIEW 4: ELIGIBILITY MATCHER ═══════════════ -->
-      <section id="view-matcher" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="calculator" style="color: var(--accent-secondary);"></i> Eligibility Calculator</h2>
-          <p class="section-subtitle">Input your academic scores and English results to find matching institutions across Australia & New Zealand.</p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 1.75rem;">
-          <div class="glass-card">
-            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1.15rem;">Academic Profile</h3>
-            <form id="matcher-form">
-              <div class="input-group" style="margin-bottom: 0.85rem;">
-                <label class="input-label" for="match-atar">ATAR Equivalent (0 - 99.95)</label>
-                <input type="number" step="0.5" min="50" max="99.95" id="match-atar" class="form-control" value="85.0" required />
+          <!-- Student Profile Card -->
+          <div class="glass-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i data-lucide="user" style="width: 18px; height: 18px; color: var(--accent-primary);"></i> Student Profile
+              <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: auto;">Included in all exports</span>
+            </h3>
+            <form id="student-profile-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; align-items: end;">
+              <div class="input-group">
+                <label class="input-label" for="student-name">Full Name</label>
+                <input type="text" id="student-name" class="form-control" placeholder="Ahmed Al-Farsi" />
               </div>
-
-              <div class="input-group" style="margin-bottom: 0.85rem;">
-                <label class="input-label" for="match-gpa">GPA (4.0 Scale)</label>
-                <input type="number" step="0.01" min="0" max="4.0" id="match-gpa" class="form-control" value="3.6" required />
+              <div class="input-group">
+                <label class="input-label" for="student-email">Email</label>
+                <input type="email" id="student-email" class="form-control" placeholder="student@email.com" />
               </div>
-
-              <div class="input-group" style="margin-bottom: 0.85rem;">
-                <label class="input-label" for="match-ielts">IELTS Academic Overall</label>
-                <input type="number" step="0.5" min="5.0" max="9.0" id="match-ielts" class="form-control" value="6.5" required />
+              <div class="input-group">
+                <label class="input-label" for="student-phone">Phone</label>
+                <input type="tel" id="student-phone" class="form-control" placeholder="+90 555 123 4567" />
               </div>
-
-              <div class="input-group" style="margin-bottom: 0.85rem;">
-                <label class="input-label" for="match-pte">PTE Academic Score</label>
-                <input type="number" min="30" max="90" id="match-pte" class="form-control" value="64" required />
+              <div class="input-group">
+                <label class="input-label" for="student-nationality">Nationality</label>
+                <input type="text" id="student-nationality" class="form-control" placeholder="Turkish" />
               </div>
-
-              <div class="input-group" style="margin-bottom: 1.25rem;">
-                <label class="input-label" for="match-budget-aud">Annual Budget (AUD $)</label>
-                <input type="number" min="20000" step="2000" id="match-budget-aud" class="form-control" value="50000" required />
+              <div class="input-group" style="grid-column: span 2;">
+                <label class="input-label" for="student-notes">Notes</label>
+                <input type="text" id="student-notes" class="form-control" placeholder="Any special circumstances, preferred program, etc." />
               </div>
-
-              <button type="submit" class="btn btn-primary" style="width: 100%;">
-                <i data-lucide="refresh-cw" style="width: 15px; height: 15px;"></i> Calculate Compatibility
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Profile
               </button>
             </form>
           </div>
 
-          <div id="matcher-results">
-            <div class="glass-card" style="text-align: center; padding: 3.5rem 2rem;">
-              <i data-lucide="target" style="width: 44px; height: 44px; color: var(--accent-secondary); margin-bottom: 0.85rem;"></i>
-              <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem;">Calculate Your Match</h3>
-              <p style="color: var(--text-secondary); max-width: 420px; margin: 0 auto; font-size: 0.9rem;">Enter your academic parameters and click 'Calculate Compatibility'.</p>
+          <!-- Stats -->
+          <div class="app-stats-row">
+            <div class="glass-card app-stat-mini">
+              <div class="app-stat-mini-label">Applications</div>
+              <div class="app-stat-mini-value" id="stat-total-apps-view" style="color: var(--accent-primary);">0</div>
+            </div>
+            <div class="glass-card app-stat-mini">
+              <div class="app-stat-mini-label">Ready to Submit</div>
+              <div class="app-stat-mini-value" id="stat-complete-apps" style="color: var(--accent-success);">0</div>
+            </div>
+            <div class="glass-card app-stat-mini">
+              <div class="app-stat-mini-label">Documents</div>
+              <div class="app-stat-mini-value" id="stat-docs-uploaded" style="color: var(--accent-warning);">0/0</div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- ═══════════════ VIEW 5: SCHOLARSHIPS ═══════════════ -->
-      <section id="view-scholarships" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="award" style="color: var(--accent-warning);"></i> Scholarships — Australia & New Zealand</h2>
-          <p class="section-subtitle">Government awards, university merit scholarships, and financial aid across both countries.</p>
-        </div>
+          <!-- Application Cards Container -->
+          <div id="applications-container"></div>
+        </section>
 
-        <div class="filter-bar" style="grid-template-columns: 1fr auto auto; margin-bottom: 1.5rem;">
-          <input type="text" id="scholarship-search" class="form-control" placeholder="Search scholarships..." />
-          <select id="scholarship-country" class="form-control" style="width: auto;">
-            <option value="all">All Countries</option>
-            <option value="Australia">🇦🇺 Australia</option>
-            <option value="New Zealand">🇳🇿 New Zealand</option>
-          </select>
-          <button class="btn btn-primary btn-sm" onclick="UniScholarships.render()">
-            <i data-lucide="search" style="width: 14px; height: 14px;"></i> Search
-          </button>
-        </div>
+        <!-- ═══════════════ VIEW 3: APPLICATION TIMELINE ═══════════════ -->
+        <section id="view-timeline" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="git-branch" style="color: var(--accent-purple);"></i> Application Timeline</h2>
+            <p class="section-subtitle">Track your application progress through key milestones. Click milestone icons to update their status.</p>
+          </div>
+          <div id="timeline-container"></div>
+        </section>
 
-        <div id="scholarships-grid" class="card-grid"></div>
-      </section>
+        <!-- ═══════════════ VIEW 4: ELIGIBILITY MATCHER ═══════════════ -->
+        <section id="view-matcher" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="calculator" style="color: var(--accent-secondary);"></i> Eligibility Calculator</h2>
+            <p class="section-subtitle">Input your academic scores and English results to find matching institutions across Australia & New Zealand.</p>
+          </div>
 
-      <!-- ═══════════════ VIEW 6: VISA & TOOLS ═══════════════ -->
-      <section id="view-tools" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="wrench" style="color: var(--accent-primary);"></i> Visa, Financial & Grade Tools</h2>
-          <p class="section-subtitle">IB/GPA to ATAR conversion, Subclass 500 financial proof calculator, post-study work visa rights, and city cost of living comparison.</p>
-        </div>
+          <div class="matcher-layout">
+            <div class="glass-card">
+              <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1.15rem;">Academic Profile</h3>
+              <form id="matcher-form">
+                <div class="input-group" style="margin-bottom: 0.85rem;">
+                  <label class="input-label" for="match-atar">ATAR Equivalent (0 - 99.95)</label>
+                  <input type="number" step="0.5" min="50" max="99.95" id="match-atar" class="form-control" value="85.0" required />
+                </div>
 
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.75rem;">
+                <div class="input-group" style="margin-bottom: 0.85rem;">
+                  <label class="input-label" for="match-gpa">GPA (4.0 Scale)</label>
+                  <input type="number" step="0.01" min="0" max="4.0" id="match-gpa" class="form-control" value="3.6" required />
+                </div>
 
-          <!-- Tool 1: ATAR Grade Converter -->
-          <div class="glass-card scroll-reveal">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-primary);">
-              <i data-lucide="arrow-right-left" style="width: 18px; height: 18px;"></i>
-              <h3 style="font-size: 1.05rem; font-weight: 800;">ATAR Grade Converter</h3>
+                <div class="input-group" style="margin-bottom: 0.85rem;">
+                  <label class="input-label" for="match-ielts">IELTS Academic Overall</label>
+                  <input type="number" step="0.5" min="5.0" max="9.0" id="match-ielts" class="form-control" value="6.5" required />
+                </div>
+
+                <div class="input-group" style="margin-bottom: 0.85rem;">
+                  <label class="input-label" for="match-pte">PTE Academic Score</label>
+                  <input type="number" min="30" max="90" id="match-pte" class="form-control" value="64" required />
+                </div>
+
+                <div class="input-group" style="margin-bottom: 1.25rem;">
+                  <label class="input-label" for="match-budget-aud">Annual Budget (AUD $)</label>
+                  <input type="number" min="20000" step="2000" id="match-budget-aud" class="form-control" value="50000" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i data-lucide="refresh-cw" style="width: 15px; height: 15px;"></i> Calculate Compatibility
+                </button>
+              </form>
             </div>
 
-            <div class="input-group" style="margin-bottom: 0.85rem;">
-              <label class="input-label" for="calc-ib">IB Diploma Score (out of 45)</label>
-              <input type="number" min="24" max="45" id="calc-ib" class="form-control" value="38" />
-              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-ib-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.80</strong>
+            <div id="matcher-results">
+              <div class="glass-card" style="text-align: center; padding: 3.5rem 2rem;">
+                <i data-lucide="target" style="width: 44px; height: 44px; color: var(--accent-secondary); margin-bottom: 0.85rem;"></i>
+                <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem;">Calculate Your Match</h3>
+                <p style="color: var(--text-secondary); max-width: 420px; margin: 0 auto; font-size: 0.9rem;">Enter your academic parameters and click 'Calculate Compatibility'.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ VIEW 5: SCHOLARSHIPS ═══════════════ -->
+        <section id="view-scholarships" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="award" style="color: var(--accent-warning);"></i> Scholarships — Australia & New Zealand</h2>
+            <p class="section-subtitle">Government awards, university merit scholarships, and financial aid across both countries.</p>
+          </div>
+
+          <div class="filter-bar" style="grid-template-columns: 1fr auto auto; margin-bottom: 1.5rem;">
+            <input type="text" id="scholarship-search" class="form-control" placeholder="Search scholarships..." />
+            <select id="scholarship-country" class="form-control" style="width: auto;">
+              <option value="all">All Countries</option>
+              <option value="Australia">🇦🇺 Australia</option>
+              <option value="New Zealand">🇳🇿 New Zealand</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="UniScholarships.render()">
+              <i data-lucide="search" style="width: 14px; height: 14px;"></i> Search
+            </button>
+          </div>
+
+          <div id="scholarships-grid" class="card-grid"></div>
+        </section>
+
+        <!-- ═══════════════ VIEW 6: VISA & TOOLS ═══════════════ -->
+        <section id="view-tools" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="wrench" style="color: var(--accent-primary);"></i> Visa, Financial & Grade Tools</h2>
+            <p class="section-subtitle">IB/GPA to ATAR conversion, Subclass 500 financial proof calculator, post-study work visa rights, and city cost of living comparison.</p>
+          </div>
+
+          <div class="tools-grid">
+
+            <!-- Tool 1: ATAR Grade Converter -->
+            <div class="glass-card scroll-reveal">
+              <div class="tool-card-header" style="color: var(--accent-primary);">
+                <i data-lucide="arrow-right-left" style="width: 18px; height: 18px;"></i>
+                <h3>ATAR Grade Converter</h3>
+              </div>
+
+              <div class="input-group" style="margin-bottom: 0.85rem;">
+                <label class="input-label" for="calc-ib">IB Diploma Score (out of 45)</label>
+                <input type="number" min="24" max="45" id="calc-ib" class="form-control" value="38" />
+                <div class="tool-result-inline">
+                  Estimated ATAR: <strong id="out-ib-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.80</strong>
+                </div>
+              </div>
+
+              <div class="input-group" style="margin-bottom: 0.85rem;">
+                <label class="input-label" for="calc-gpa">US High School GPA (out of 4.0)</label>
+                <input type="number" step="0.05" min="2.5" max="4.0" id="calc-gpa" class="form-control" value="3.80" />
+                <div class="tool-result-inline">
+                  Estimated ATAR: <strong id="out-gpa-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.00</strong>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label" for="calc-cbse">CBSE / Indian Board (%)</label>
+                <input type="number" min="60" max="100" id="calc-cbse" class="form-control" value="92" />
+                <div class="tool-result-inline">
+                  Estimated ATAR: <strong id="out-cbse-atar" style="color: var(--accent-primary); font-size: 0.95rem;">93.00</strong>
+                </div>
               </div>
             </div>
 
-            <div class="input-group" style="margin-bottom: 0.85rem;">
-              <label class="input-label" for="calc-gpa">US High School GPA (out of 4.0)</label>
-              <input type="number" step="0.05" min="2.5" max="4.0" id="calc-gpa" class="form-control" value="3.80" />
-              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-gpa-atar" style="color: var(--accent-primary); font-size: 0.95rem;">95.00</strong>
+            <!-- Tool 2: Financial Calculator -->
+            <div class="glass-card scroll-reveal scroll-reveal-delay-1">
+              <div class="tool-card-header" style="color: var(--accent-warning);">
+                <i data-lucide="coins" style="width: 18px; height: 18px;"></i>
+                <h3>DHA Financial Proof (Subclass 500)</h3>
               </div>
-            </div>
 
-            <div class="input-group">
-              <label class="input-label" for="calc-cbse">CBSE / Indian Board (%)</label>
-              <input type="number" min="60" max="100" id="calc-cbse" class="form-control" value="92" />
-              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Estimated ATAR: <strong id="out-cbse-atar" style="color: var(--accent-primary); font-size: 0.95rem;">93.00</strong>
+              <div class="input-group" style="margin-bottom: 0.65rem;">
+                <label class="input-label" for="fin-tuition">1st Year Tuition Fee (AUD $)</label>
+                <input type="number" step="1000" id="fin-tuition" class="form-control" value="46000" />
               </div>
-            </div>
-          </div>
 
-          <!-- Tool 2: Financial Calculator -->
-          <div class="glass-card scroll-reveal scroll-reveal-delay-1">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-warning);">
-              <i data-lucide="coins" style="width: 18px; height: 18px;"></i>
-              <h3 style="font-size: 1.05rem; font-weight: 800;">DHA Financial Proof (Subclass 500)</h3>
-            </div>
+              <div style="display: flex; gap: 1rem; margin-bottom: 0.65rem;">
+                <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;">
+                  <input type="checkbox" id="fin-spouse" style="accent-color: var(--accent-warning);" />
+                  Include Spouse (+AUD $10,394)
+                </label>
+              </div>
 
-            <div class="input-group" style="margin-bottom: 0.65rem;">
-              <label class="input-label" for="fin-tuition">1st Year Tuition Fee (AUD $)</label>
-              <input type="number" step="1000" id="fin-tuition" class="form-control" value="46000" />
-            </div>
+              <div class="input-group" style="margin-bottom: 0.65rem;">
+                <label class="input-label" for="fin-children">Number of Child Dependents</label>
+                <input type="number" min="0" max="4" id="fin-children" class="form-control" value="0" />
+              </div>
 
-            <div style="display: flex; gap: 1rem; margin-bottom: 0.65rem;">
-              <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;">
-                <input type="checkbox" id="fin-spouse" style="accent-color: var(--accent-warning);" />
-                Include Spouse (+AUD $10,394)
-              </label>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 0.65rem;">
-              <label class="input-label" for="fin-children">Number of Child Dependents</label>
-              <input type="number" min="0" max="4" id="fin-children" class="form-control" value="0" />
-            </div>
-
-            <div class="input-group" style="margin-bottom: 0.85rem;">
-              <label class="input-label" for="fin-oshc-type">OSHC Health Cover Type</label>
-              <select id="fin-oshc-type" class="form-control">
-                <option value="single">Single (~AUD $650/yr)</option>
-                <option value="couple">Couple (~AUD $2,800/yr)</option>
-                <option value="family">Family (~AUD $4,200/yr)</option>
-              </select>
-            </div>
-
-            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.75rem; border-radius: var(--radius-xs);">
-              <div style="font-size: 0.725rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Required Bank Balance</div>
-              <div id="out-fin-total-aud" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-warning);">AUD $78,360</div>
-              <div id="out-fin-total-usd" style="font-size: 0.8rem; color: var(--text-secondary);">~ USD $50,934</div>
-            </div>
-          </div>
-
-          <!-- Tool 3: Post-Study Work Visa -->
-          <div class="glass-card scroll-reveal scroll-reveal-delay-2">
-            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; color: var(--accent-success);">
-              <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
-              <h3 style="font-size: 1.05rem; font-weight: 800;">Subclass 485 Work Rights</h3>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 0.85rem;">
-              <label class="input-label" for="visa-degree">Degree Level</label>
-              <select id="visa-degree" class="form-control">
-                <option value="bachelor">Bachelor's (Base 2 Yrs)</option>
-                <option value="master">Master's (Base 3 Yrs)</option>
-                <option value="phd">PhD (Base 4 Yrs)</option>
-              </select>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 1rem;">
-              <label class="input-label" for="visa-location">Campus Location</label>
-              <select id="visa-location" class="form-control">
-                <option value="metro">Metro (Sydney / Melbourne)</option>
-                <option value="regional-cat2">Cat 2 Regional (+1 Yr Bonus)</option>
-                <option value="regional-cat3">Cat 3 Regional (+2 Yrs Bonus)</option>
-              </select>
-            </div>
-
-            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 0.75rem; border-radius: var(--radius-xs);">
-              <div style="font-size: 0.725rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Post-Study Work Visa</div>
-              <div id="out-pswv-years" style="font-size: 1.25rem; font-weight: 800; color: var(--accent-success);">2 Years Full Work Rights</div>
-              <div id="out-pswv-desc" style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 0.2rem; line-height: 1.35;">Full-time post-study work eligibility across Australia.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="glass-card scroll-reveal" style="padding: 1.25rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem;">
-          <i data-lucide="clock" style="width: 30px; height: 30px; color: var(--accent-primary); flex-shrink: 0;"></i>
-          <div>
-            <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem;">Subclass 500 Work Hours</h4>
-            <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.45;">
-              International students may work up to <strong>48 hours per fortnight</strong> during sessions, and <strong>unlimited hours</strong> during official breaks.
-            </p>
-          </div>
-        </div>
-
-        <!-- Cost of Living Comparison Section -->
-        <div class="section-header scroll-reveal">
-          <h2 class="section-title" style="font-size: 1.35rem;">
-            <i data-lucide="bar-chart-3" style="color: var(--accent-secondary);"></i> Cost of Living Comparison
-          </h2>
-          <p class="section-subtitle">Monthly living costs comparison across major AU & NZ student cities (shared accommodation, student budget).</p>
-        </div>
-        <div id="col-container"></div>
-      </section>
-
-      <!-- ═══════════════ VIEW 7: GS STATEMENT ═══════════════ -->
-      <section id="view-essays" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="file-text" style="color: var(--accent-success);"></i> Genuine Student (GS) Statement Workspace</h2>
-          <p class="section-subtitle">Draft your GS statement for Subclass 500 Visa and academic statements.</p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 320px; gap: 1.75rem;">
-          <div class="glass-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-              <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <select id="essay-uni-select" class="form-control" style="width: auto; font-weight: 700;">
-                  <option value="UniMelb">UniMelb — GS Statement</option>
-                  <option value="USYD">USYD — Statement of Intent</option>
-                  <option value="UNSW">UNSW — Personal Statement</option>
-                  <option value="UoA">UoA — Statement of Purpose</option>
-                  <option value="General-GS">General AU/NZ GS Statement</option>
+              <div class="input-group" style="margin-bottom: 0.85rem;">
+                <label class="input-label" for="fin-oshc-type">OSHC Health Cover Type</label>
+                <select id="fin-oshc-type" class="form-control">
+                  <option value="single">Single (~AUD $650/yr)</option>
+                  <option value="couple">Couple (~AUD $2,800/yr)</option>
+                  <option value="family">Family (~AUD $4,200/yr)</option>
                 </select>
-                <button class="btn btn-secondary btn-sm" onclick="UniEssays.loadDraft()">Load Draft</button>
               </div>
-              <button class="btn btn-primary btn-sm" onclick="UniEssays.saveDraft()">
-                <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Draft
-              </button>
-            </div>
 
-            <textarea id="essay-textarea" class="form-control" style="height: 360px; resize: vertical; line-height: 1.6; font-size: 0.9rem;" placeholder="Write your Genuine Student (GS) statement or Statement of Purpose here..."></textarea>
-
-            <div style="margin-top: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
-              <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                Words: <strong id="essay-word-count" style="color: var(--text-primary);">0</strong> | Characters: <strong id="essay-char-count" style="color: var(--text-primary);">0</strong>
-              </div>
-              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
-                Target:
-                <input type="number" id="essay-target-words" class="form-control" value="500" style="width: 75px; padding: 0.2rem 0.5rem;" />
+              <div class="tool-result-box tool-result-warning">
+                <div class="tool-result-box-label">Required Bank Balance</div>
+                <div id="out-fin-total-aud" class="tool-result-box-value">AUD $78,360</div>
+                <div id="out-fin-total-usd" class="tool-result-box-sub">~ USD $50,934</div>
               </div>
             </div>
 
-            <div class="app-progress-track" style="margin-top: 0.65rem;">
-              <div id="essay-progress-fill" class="app-progress-fill" style="width: 0%;"></div>
+            <!-- Tool 3: Post-Study Work Visa -->
+            <div class="glass-card scroll-reveal scroll-reveal-delay-2">
+              <div class="tool-card-header" style="color: var(--accent-success);">
+                <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                <h3>Subclass 485 Work Rights</h3>
+              </div>
+
+              <div class="input-group" style="margin-bottom: 0.85rem;">
+                <label class="input-label" for="visa-degree">Degree Level</label>
+                <select id="visa-degree" class="form-control">
+                  <option value="bachelor">Bachelor's (Base 2 Yrs)</option>
+                  <option value="master">Master's (Base 3 Yrs)</option>
+                  <option value="phd">PhD (Base 4 Yrs)</option>
+                </select>
+              </div>
+
+              <div class="input-group" style="margin-bottom: 1rem;">
+                <label class="input-label" for="visa-location">Campus Location</label>
+                <select id="visa-location" class="form-control">
+                  <option value="metro">Metro (Sydney / Melbourne)</option>
+                  <option value="regional-cat2">Cat 2 Regional (+1 Yr Bonus)</option>
+                  <option value="regional-cat3">Cat 3 Regional (+2 Yrs Bonus)</option>
+                </select>
+              </div>
+
+              <div class="tool-result-box tool-result-success">
+                <div class="tool-result-box-label">Total Post-Study Work Visa</div>
+                <div id="out-pswv-years" class="tool-result-box-value">2 Years Full Work Rights</div>
+                <div id="out-pswv-desc" class="tool-result-box-sub">Full-time post-study work eligibility across Australia.</div>
+              </div>
             </div>
           </div>
 
-          <div class="glass-card">
-            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 0.85rem;">GS Criteria Checklist</h3>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem; color: var(--text-secondary);">
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why you chose Australia/NZ over home country.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> How the program aligns with career goals.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Address any study gaps clearly.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Financial ties to home country.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Immigration history (if applicable).</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Your plan to return home after studies.</li>
-              <li style="display: flex; gap: 0.45rem;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why this specific institution over others.</li>
+          <div class="glass-card scroll-reveal work-hours-card">
+            <i data-lucide="clock" style="width: 30px; height: 30px; color: var(--accent-primary); flex-shrink: 0;"></i>
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem;">Subclass 500 Work Hours</h4>
+              <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.45;">
+                International students may work up to <strong>48 hours per fortnight</strong> during sessions, and <strong>unlimited hours</strong> during official breaks.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cost of Living Comparison Section -->
+          <div class="section-header scroll-reveal" style="margin-top: 2rem;">
+            <h2 class="section-title" style="font-size: 1.35rem;">
+              <i data-lucide="bar-chart-3" style="color: var(--accent-secondary);"></i> Cost of Living Comparison
+            </h2>
+            <p class="section-subtitle">Monthly living costs comparison across major AU & NZ student cities (shared accommodation, student budget).</p>
+          </div>
+          <div id="col-container"></div>
+        </section>
+
+        <!-- ═══════════════ VIEW 7: GS STATEMENT ═══════════════ -->
+        <section id="view-essays" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="file-text" style="color: var(--accent-success);"></i> Genuine Student (GS) Statement Workspace</h2>
+            <p class="section-subtitle">Draft your GS statement for Subclass 500 Visa and academic statements.</p>
+          </div>
+
+          <div class="essays-layout">
+            <div class="glass-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                  <select id="essay-uni-select" class="form-control" style="width: auto; font-weight: 700;">
+                    <option value="UniMelb">UniMelb — GS Statement</option>
+                    <option value="USYD">USYD — Statement of Intent</option>
+                    <option value="UNSW">UNSW — Personal Statement</option>
+                    <option value="UoA">UoA — Statement of Purpose</option>
+                    <option value="General-GS">General AU/NZ GS Statement</option>
+                  </select>
+                  <button class="btn btn-glass btn-sm" onclick="UniEssays.loadDraft()">Load Draft</button>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="UniEssays.saveDraft()">
+                  <i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Draft
+                </button>
+              </div>
+
+              <textarea id="essay-textarea" class="form-control" style="height: 360px; resize: vertical; line-height: 1.6; font-size: 0.9rem;" placeholder="Write your Genuine Student (GS) statement or Statement of Purpose here..."></textarea>
+
+              <div style="margin-top: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                  Words: <strong id="essay-word-count" style="color: var(--text-primary);">0</strong> | Characters: <strong id="essay-char-count" style="color: var(--text-primary);">0</strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                  Target:
+                  <input type="number" id="essay-target-words" class="form-control" value="500" style="width: 75px; padding: 0.2rem 0.5rem;" />
+                </div>
+              </div>
+
+              <div class="app-progress-track" style="margin-top: 0.65rem;">
+                <div id="essay-progress-fill" class="app-progress-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 0.85rem;">GS Criteria Checklist</h3>
+              <ul class="gs-checklist">
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why you chose Australia/NZ over home country.</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> How the program aligns with career goals.</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Address any study gaps clearly.</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Financial ties to home country.</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Immigration history (if applicable).</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Your plan to return home after studies.</li>
+                <li><i data-lucide="check" style="width: 15px; height: 15px; color: var(--accent-primary);"></i> Why this specific institution over others.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ VIEW 8: FAVORITES ═══════════════ -->
+        <section id="view-favorites" class="tab-view">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="heart" style="color: var(--accent-danger);"></i> Saved Institutions</h2>
+            <p class="section-subtitle">Your bookmarked universities and language schools. Click the heart on any institution card to save it here.</p>
+          </div>
+          <div id="favorites-container"></div>
+        </section>
+
+      </main>
+
+      <!-- ═══════════════ FOOTER ═══════════════ -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="footer-brand-name">Uni<span>Path</span></div>
+            <p class="footer-brand-desc">Your comprehensive admissions portal for Australian & New Zealand universities and language schools. Browse, compare, apply — all in one place.</p>
+          </div>
+          <div>
+            <div class="footer-section-title">Quick Links</div>
+            <ul class="footer-links">
+              <li><button onclick="App.switchTab('explorer')">Browse Institutions</button></li>
+              <li><button onclick="App.switchTab('applications')">My Applications</button></li>
+              <li><button onclick="App.switchTab('matcher')">Eligibility Calculator</button></li>
+              <li><button onclick="App.switchTab('scholarships')">Scholarships</button></li>
+            </ul>
+          </div>
+          <div>
+            <div class="footer-section-title">Tools</div>
+            <ul class="footer-links">
+              <li><button onclick="App.switchTab('tools')">ATAR Converter</button></li>
+              <li><button onclick="App.switchTab('tools')">Financial Calculator</button></li>
+              <li><button onclick="App.switchTab('tools')">Work Visa Rights</button></li>
+              <li><button onclick="App.switchTab('tools')">Cost of Living</button></li>
+            </ul>
+          </div>
+          <div>
+            <div class="footer-section-title">Resources</div>
+            <ul class="footer-links">
+              <li><button onclick="App.switchTab('essays')">GS Statement Guide</button></li>
+              <li><button onclick="App.switchTab('timeline')">Application Timeline</button></li>
+              <li><a href="candidate-console/index.html">Candidate Console</a></li>
             </ul>
           </div>
         </div>
-      </section>
+        <div class="footer-bottom">
+          <span>© 2026 UniPath Portal — Oceanic Education Admissions</span>
+          <div class="footer-bottom-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="candidate-console/index.html">Developer Console</a>
+          </div>
+        </div>
+      </footer>
 
-      <!-- ═══════════════ VIEW 8: FAVORITES ═══════════════ -->
-      <section id="view-favorites" class="tab-view">
-        <div class="section-header">
-          <h2 class="section-title"><i data-lucide="heart" style="color: var(--accent-danger);"></i> Saved Institutions</h2>
-          <p class="section-subtitle">Your bookmarked universities and language schools. Click the heart on any institution card to save it here.</p>
-        </div>
-        <div id="favorites-container"></div>
-      </section>
-
-    </main>
-
-    <!-- ═══════════════ FOOTER ═══════════════ -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <div class="footer-brand-name">Uni<span>Path</span></div>
-          <p class="footer-brand-desc">Your comprehensive admissions portal for Australian & New Zealand universities and language schools. Browse, compare, apply — all in one place.</p>
-        </div>
-        <div>
-          <div class="footer-section-title">Quick Links</div>
-          <ul class="footer-links">
-            <li><button onclick="App.switchTab('explorer')">Browse Institutions</button></li>
-            <li><button onclick="App.switchTab('applications')">My Applications</button></li>
-            <li><button onclick="App.switchTab('matcher')">Eligibility Calculator</button></li>
-            <li><button onclick="App.switchTab('scholarships')">Scholarships</button></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-section-title">Tools</div>
-          <ul class="footer-links">
-            <li><button onclick="App.switchTab('tools')">ATAR Converter</button></li>
-            <li><button onclick="App.switchTab('tools')">Financial Calculator</button></li>
-            <li><button onclick="App.switchTab('tools')">Work Visa Rights</button></li>
-            <li><button onclick="App.switchTab('tools')">Cost of Living</button></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-section-title">Resources</div>
-          <ul class="footer-links">
-            <li><button onclick="App.switchTab('essays')">GS Statement Guide</button></li>
-            <li><button onclick="App.switchTab('timeline')">Application Timeline</button></li>
-            <li><a href="candidate-console/index.html">Candidate Console</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2026 UniPath Portal — Oceanic Education Admissions</span>
-        <div class="footer-bottom-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="candidate-console/index.html">Developer Console</a>
-        </div>
-      </div>
-    </footer>
-  </div>
+    </div><!-- /main-wrapper -->
+  </div><!-- /app-layout -->
 
   <!-- Compare FAB -->
   <button class="compare-fab" id="compare-fab" onclick="UniCompare.openComparison()">
     <i data-lucide="columns" style="width: 18px; height: 18px;"></i>
     Compare (<span class="compare-count">0</span>)
   </button>
-
-  <!-- Floating Action Bar -->
-  <div class="floating-action-bar" id="floating-action-bar">
-    <button class="fab-btn fab-primary" onclick="App.switchTab('explorer')">
-      <i data-lucide="compass" style="width: 16px; height: 16px;"></i>
-      <span class="fab-label">Explore</span>
-    </button>
-    <div class="fab-divider"></div>
-    <button class="fab-btn" onclick="App.switchTab('applications')">
-      <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i>
-      <span class="fab-label">Apps</span>
-    </button>
-    <button class="fab-btn" onclick="App.switchTab('matcher')">
-      <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
-      <span class="fab-label">Match</span>
-    </button>
-    <button class="fab-btn" id="fab-theme-btn" onclick="App.openThemeModal()">
-      <i data-lucide="palette" style="width: 16px; height: 16px;"></i>
-      <span class="fab-label">Theme</span>
-    </button>
-    <div class="fab-divider"></div>
-    <button class="fab-btn" onclick="UniDocuments.exportAllApplications()">
-      <i data-lucide="download" style="width: 16px; height: 16px;"></i>
-      <span class="fab-label">Export</span>
-    </button>
-  </div>
 
   <!-- Modal Overlay -->
   <div id="uni-modal-overlay" class="modal-overlay">
@@ -757,7 +789,7 @@
       <div class="shortcut-row"><span>Toggle Dark Mode</span> <kbd>D</kbd></div>
       <div class="shortcut-row"><span>This Help Panel</span> <kbd>?</kbd></div>
       <div style="margin-top: 1rem; text-align: center;">
-        <button class="btn btn-secondary btn-sm" onclick="App.closeShortcutsPanel()">Close</button>
+        <button class="btn btn-glass btn-sm" onclick="App.closeShortcutsPanel()">Close</button>
       </div>
     </div>
   </div>
@@ -780,6 +812,7 @@
   <script src="js/costliving.js"></script>
   <script src="js/timeline.js"></script>
   <script src="js/favorites.js"></script>
+  <script src="js/tracker.js"></script>
   <script src="js/app.js"></script>
 
 </body>

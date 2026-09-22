@@ -1,14 +1,27 @@
 /* ==========================================================================
-   UNIPATH — APP CONTROLLER
-   Manages tab navigation, initializes all modules, dashboard stats,
-   dark mode, scroll reveals, count-up animations, floating action bar,
-   keyboard shortcuts, command palette, and hamburger menu
+   UNIPATH — AURA APP CONTROLLER
+   Manages sidebar navigation, tab switching, initializes all modules,
+   dashboard stats, dark mode, scroll reveals, count-up animations,
+   keyboard shortcuts, command palette, and sidebar toggle
    ========================================================================== */
 
 window.App = {
   currentTab: 'explorer',
   commandPaletteOpen: false,
   shortcutsPanelOpen: false,
+  sidebarCollapsed: false,
+
+  // Tab to breadcrumb mapping
+  tabLabels: {
+    explorer: { icon: 'compass', label: 'Institutions' },
+    applications: { icon: 'folder-open', label: 'Applications' },
+    timeline: { icon: 'git-branch', label: 'Timeline' },
+    matcher: { icon: 'calculator', label: 'Eligibility' },
+    scholarships: { icon: 'award', label: 'Scholarships' },
+    tools: { icon: 'wrench', label: 'Tools' },
+    essays: { icon: 'file-text', label: 'GS Statement' },
+    favorites: { icon: 'heart', label: 'Saved' }
+  },
 
   async init() {
     // Initialize document storage (IndexedDB)
@@ -20,8 +33,9 @@ window.App = {
     this.bindThemePaletteEvents();
     this.bindModalOverlayEvents();
 
-    // Bind navigation
-    this.bindTabNavigation();
+    // Bind navigation — sidebar
+    this.bindSidebarNavigation();
+    this.bindSidebarToggle();
 
     // Initialize core modules
     window.UniExplorer.init();
@@ -50,9 +64,6 @@ window.App = {
     // Setup scroll reveals
     this.observeScrollReveals();
 
-    // Setup floating action bar
-    this.setupFloatingActionBar();
-
     // Count-up animation for hero stats
     this.setupCountUp();
 
@@ -62,35 +73,80 @@ window.App = {
     // Command palette
     this.bindCommandPalette();
 
-    // Hamburger menu
-    this.bindHamburgerMenu();
+    // Apply default dark theme if no saved preference
+    if (!localStorage.getItem('unipath_theme')) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
   },
 
-  // ═══════════════ TAB NAVIGATION ═══════════════
-  bindTabNavigation() {
-    const tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const targetViewId = tab.getAttribute('data-tab');
-        this.switchTab(targetViewId);
+  // ═══════════════ SIDEBAR NAVIGATION ═══════════════
+  bindSidebarNavigation() {
+    const items = document.querySelectorAll('.sidebar-nav-item[data-tab]');
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        const tabId = item.getAttribute('data-tab');
+        this.switchTab(tabId);
 
-        // Close mobile menu
-        const navTabs = document.getElementById('nav-tabs');
-        if (navTabs) navTabs.classList.remove('mobile-open');
+        // Close mobile sidebar
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.classList.remove('active');
       });
     });
+  },
+
+  bindSidebarToggle() {
+    // Collapse button (desktop)
+    const collapseBtn = document.getElementById('sidebar-collapse-btn');
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        this.sidebarCollapsed = !this.sidebarCollapsed;
+        document.body.classList.toggle('sidebar-collapsed', this.sidebarCollapsed);
+      });
+    }
+
+    // Mobile menu button
+    const menuBtn = document.getElementById('topbar-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (menuBtn && sidebar) {
+      menuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('mobile-open');
+        if (overlay) overlay.classList.toggle('active', sidebar.classList.contains('mobile-open'));
+      });
+    }
+
+    // Close sidebar on overlay click
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+      });
+    }
   },
 
   switchTab(tabId) {
     this.currentTab = tabId;
 
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-nav-item[data-tab]').forEach(item => {
+      item.classList.toggle('active', item.getAttribute('data-tab') === tabId);
+    });
+
+    // Also support old nav-tab class for backward compat
     document.querySelectorAll('.nav-tab').forEach(t => {
       t.classList.toggle('active', t.getAttribute('data-tab') === tabId);
     });
 
+    // Switch view
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.toggle('active', view.id === `view-${tabId}`);
     });
+
+    // Update breadcrumb
+    this.updateBreadcrumb(tabId);
 
     // Refresh data when entering specific tabs
     if (tabId === 'applications') {
@@ -104,7 +160,6 @@ window.App = {
       if (window.UniFavorites) window.UniFavorites.render();
     } else if (tabId === 'tools') {
       if (window.UniCostLiving) {
-        // Re-trigger bar animations
         setTimeout(() => {
           document.querySelectorAll('.col-bar-fill').forEach(bar => {
             bar.style.width = bar.dataset.width;
@@ -117,6 +172,23 @@ window.App = {
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  updateBreadcrumb(tabId) {
+    const info = this.tabLabels[tabId];
+    if (!info) return;
+
+    const iconEl = document.querySelector('.topbar-breadcrumb-icon');
+    const textEl = document.querySelector('.topbar-breadcrumb-text');
+
+    if (iconEl) {
+      iconEl.innerHTML = `<i data-lucide="${info.icon}" style="width: 16px; height: 16px;"></i>`;
+    }
+    if (textEl) {
+      textEl.textContent = info.label;
+    }
+
+    if (window.lucide) window.lucide.createIcons();
   },
 
   // ═══════════════ DASHBOARD STATS ═══════════════
@@ -159,7 +231,7 @@ window.App = {
 
   // ═══════════════ DARK MODE & COLOR THEMES ═══════════════
   loadTheme() {
-    const savedTheme = localStorage.getItem('unipath_theme') || 'light';
+    const savedTheme = localStorage.getItem('unipath_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
   },
 
@@ -273,7 +345,7 @@ window.App = {
     if (dd) dd.classList.remove('active');
 
     const currentTheme = document.documentElement.getAttribute('data-color-theme') || 'oceanic';
-    const currentMode = document.documentElement.getAttribute('data-theme') || 'light';
+    const currentMode = document.documentElement.getAttribute('data-theme') || 'dark';
 
     const themes = [
       { id: 'oceanic', name: 'Oceanic Clarity', desc: 'Indigo & Sky Cyan', primary: '#4f46e5', secondary: '#0ea5e9', vibe: 'Classic AU & NZ Admissions' },
@@ -289,7 +361,7 @@ window.App = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
-              <div class="brand-icon" style="width: 32px; height: 32px; font-size: 0.95rem;">
+              <div class="sidebar-brand-icon" style="width: 32px; height: 32px; min-width: 32px; font-size: 0.95rem;">
                 <i data-lucide="palette" style="width: 18px; height: 18px;"></i>
               </div>
               <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">Theme Studio</h2>
@@ -301,12 +373,12 @@ window.App = {
           </button>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.15rem; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.15rem; background: var(--bg-subtle); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
           <div style="display: flex; align-items: center; gap: 0.6rem;">
             <i data-lucide="${currentMode === 'dark' ? 'moon' : 'sun'}" style="width: 18px; height: 18px; color: var(--accent-primary);"></i>
             <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Active Mode: <strong>${currentMode === 'dark' ? 'Dark Mode 🌙' : 'Light Mode ☀️'}</strong></span>
           </div>
-          <button class="btn btn-secondary btn-sm" onclick="App.toggleTheme(); App.openThemeModal();">
+          <button class="btn btn-glass btn-sm" onclick="App.toggleTheme(); App.openThemeModal();">
             Toggle Light / Dark
           </button>
         </div>
@@ -316,8 +388,8 @@ window.App = {
             const isActive = t.id === currentTheme;
             return `
               <div class="theme-card-picker" onclick="App.setColorTheme('${t.id}'); App.openThemeModal();" style="
-                border: 2px solid ${isActive ? 'var(--accent-primary)' : 'var(--border-subtle)'};
-                background: ${isActive ? 'var(--accent-primary-soft)' : 'var(--bg-card)'};
+                border: 2px solid ${isActive ? 'var(--accent-primary)' : 'var(--glass-border)'};
+                background: ${isActive ? 'var(--accent-primary-soft)' : 'var(--glass-bg)'};
                 border-radius: var(--radius-sm);
                 padding: 1rem;
                 cursor: pointer;
@@ -334,8 +406,8 @@ window.App = {
                       height: 30px;
                       border-radius: 50%;
                       background: linear-gradient(135deg, ${t.primary}, ${t.secondary});
-                      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                      border: 2px solid var(--bg-card);
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+                      border: 2px solid var(--bg-card-solid);
                       flex-shrink: 0;
                     "></div>
                     <div>
@@ -343,7 +415,7 @@ window.App = {
                       <div style="font-size: 0.72rem; color: var(--text-muted);">${t.desc}</div>
                     </div>
                   </div>
-                  ${isActive ? `<span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-primary); background: var(--bg-card); padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid var(--accent-primary-border);">Active</span>` : ''}
+                  ${isActive ? `<span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-primary); background: var(--bg-card-solid); padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid var(--accent-primary-border);">Active</span>` : ''}
                 </div>
                 <div style="font-size: 0.74rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.35rem 0.6rem; border-radius: 6px;">
                   ${t.vibe}
@@ -406,7 +478,6 @@ window.App = {
 
   animateCountUp(element) {
     const text = element.textContent.trim();
-    // Try to extract a number
     const match = text.match(/(\d+\.?\d*)/);
     if (!match) return;
 
@@ -421,7 +492,6 @@ window.App = {
     const animate = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = target * eased;
 
@@ -434,7 +504,7 @@ window.App = {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        element.textContent = text; // Restore exact original
+        element.textContent = text;
       }
     };
 
@@ -442,44 +512,9 @@ window.App = {
     requestAnimationFrame(animate);
   },
 
-  // ═══════════════ FLOATING ACTION BAR ═══════════════
-  setupFloatingActionBar() {
-    const fab = document.getElementById('floating-action-bar');
-    if (!fab) return;
-
-    let ticking = false;
-
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          if (scrollY > 300) {
-            fab.classList.add('visible');
-          } else {
-            fab.classList.remove('visible');
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
-  },
-
-  // ═══════════════ HAMBURGER MENU ═══════════════
-  bindHamburgerMenu() {
-    const btn = document.getElementById('hamburger-btn');
-    const navTabs = document.getElementById('nav-tabs');
-    if (!btn || !navTabs) return;
-
-    btn.addEventListener('click', () => {
-      navTabs.classList.toggle('mobile-open');
-    });
-  },
-
   // ═══════════════ KEYBOARD SHORTCUTS ═══════════════
   bindKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      // Don't trigger shortcuts when typing in inputs
       const tag = e.target.tagName.toLowerCase();
       const isTyping = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
 
@@ -490,7 +525,7 @@ window.App = {
         return;
       }
 
-      // Escape — close any open panels
+      // Escape
       if (e.key === 'Escape') {
         if (this.commandPaletteOpen) {
           this.closeCommandPalette();
@@ -500,12 +535,19 @@ window.App = {
           this.closeShortcutsPanel();
           return;
         }
+        // Close mobile sidebar
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+          const overlay = document.getElementById('sidebar-overlay');
+          if (overlay) overlay.classList.remove('active');
+          return;
+        }
         return;
       }
 
       if (isTyping) return;
 
-      // Number keys 1-8 for tab switching
       const tabMap = {
         '1': 'explorer',
         '2': 'applications',
@@ -523,14 +565,12 @@ window.App = {
         return;
       }
 
-      // ? — Keyboard shortcuts help
       if (e.key === '?') {
         e.preventDefault();
         this.toggleShortcutsPanel();
         return;
       }
 
-      // D — Toggle dark mode
       if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         this.toggleTheme();
@@ -547,17 +587,14 @@ window.App = {
 
     if (!overlay || !input || !results) return;
 
-    // Close on overlay click
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) this.closeCommandPalette();
     });
 
-    // Search on input
     input.addEventListener('input', () => {
       this.renderCommandPaletteResults(input.value.trim().toLowerCase());
     });
 
-    // Keyboard navigation within palette
     input.addEventListener('keydown', (e) => {
       const items = results.querySelectorAll('.command-palette-item');
       const activeItem = results.querySelector('.command-palette-item.active');
@@ -615,7 +652,6 @@ window.App = {
 
     const items = [];
 
-    // Tab actions
     const tabs = [
       { icon: 'compass', label: 'Go to Institutions', action: () => this.switchTab('explorer') },
       { icon: 'folder-open', label: 'Go to Applications', action: () => this.switchTab('applications') },
@@ -635,7 +671,6 @@ window.App = {
       { icon: 'download', label: 'Export All Applications', action: () => { window.UniDocuments.exportAllApplications(); } },
     ];
 
-    // Institution search
     const institutions = window.UniData.institutions || [];
 
     tabs.forEach(tab => {
@@ -654,7 +689,6 @@ window.App = {
       }
     });
 
-    // Limit results
     const displayed = items.slice(0, 12);
 
     if (displayed.length === 0) {
@@ -669,7 +703,6 @@ window.App = {
       </div>
     `).join('');
 
-    // Bind click handlers
     results.querySelectorAll('.command-palette-item').forEach((el, idx) => {
       el.addEventListener('click', () => {
         this.closeCommandPalette();
@@ -724,6 +757,11 @@ window.App = {
       toast.style.transition = '0.3s ease';
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  },
+
+  // ═══════════════ FLOATING ACTION BAR (Legacy — hidden) ═══════════════
+  setupFloatingActionBar() {
+    // Floating action bar removed in Aura redesign (sidebar replaces it)
   }
 };
 
